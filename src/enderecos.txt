@@ -1,0 +1,14 @@
+tem_btc_url = "https://broker.tembtc.com.br/api/v3/btcbrl/ticker"
+tem_eth_url = "https://broker.tembtc.com.br/api/v3/ethbtc/ticker"
+negocie_url = "https://broker.negociecoins.com.br/api/v3/btcbrl/ticker"
+bat_url = "https://broker.batexchange.com.br/api/v3/brleth/ticker"
+
+{
+buy: 19715,
+date: 1554391186,
+high: 20893,
+last: 19715,
+low: 17700,
+sell: 19712.83,
+vol: 37020.64938944
+}
