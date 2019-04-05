@@ -53,6 +53,12 @@ class App extends Component {
     return (
       <div className="App">
         <div className="cotacoes">
+          <header>Investimento</header>
+          <div className="cotacao">
+            <div className="field">
+              <div>{capital}</div>
+            </div>
+          </div>
           <header>BTC</header>
           <div className="cotacao">
             <div className="field">
@@ -83,7 +89,7 @@ class App extends Component {
         <hr/>
         <header>Bat Lucro</header>
         <div className="destaque">
-          <div><span>{lucroBat.toFixed(2)} => {pctBat.toFixed(2)}%</span></div>
+          <div><span>R$ {lucroBat.toFixed(2)} => {pctBat.toFixed(2)}%</span></div>
         </div>
       </div>
     );
