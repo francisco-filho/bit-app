@@ -14,10 +14,15 @@ class App extends Component {
     tembtc: null,
     temeth: null,
     negocie: null,
-    capital: 11000
+    capital: 11000,
+    atualizacao: new Date()
   }
 
   componentDidMount() {
+    setInterval(this.atualizarCotacoes, 3000)
+  }
+
+  atualizarCotacoes = () => {
     const {capital} = this.state
     Promise.all([
       get(TEMBTC_URL).then(resp => resp),
@@ -40,7 +45,7 @@ class App extends Component {
       const pctBat = (lucroBat / capital) * 100
 
 
-      this.setState({...result, lucroBat, pctBat})
+      this.setState({...result, lucroBat, pctBat, atualizacao: new Date()})
     })
   }
 
@@ -90,6 +95,9 @@ class App extends Component {
         <header>Bat Lucro</header>
         <div className="destaque">
           <div><span>R$ {lucroBat.toFixed(2)} => {pctBat.toFixed(2)}%</span></div>
+        </div>
+        <div>
+          {this.state.atualizacao.toLocaleTimeString()}
         </div>
       </div>
     );
