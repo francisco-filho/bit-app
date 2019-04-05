@@ -4,7 +4,27 @@ body {
 }
 
 .App {
-  text-align: center;
+  text-align: left;
+}
+
+.cotacoes header {
+    font-weight: bold;
+    color: dodgerblue;
+}
+.cotacoes .cotacao {
+  display: flex;
+}
+
+.cotacao label {
+  font-weight: bold;
+}
+
+.field {
+  min-width: 150px;
+}
+
+.destaque span {
+  font-size: 4rem;
 }
 
 .App-logo {
