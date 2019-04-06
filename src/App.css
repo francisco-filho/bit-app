@@ -31,6 +31,11 @@ body {
   display: inline-block;
   margin-left: 8px;
 }
+.destaque .simbolo-moeda {
+  font-size: 2rem;
+  display: inline-block;
+  margin-right: 8px;
+}
 
 .App-logo {
   animation: App-logo-spin infinite 20s linear;

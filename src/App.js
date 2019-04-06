@@ -123,7 +123,8 @@ class App extends Component {
         <header>Bat Lucro</header>
         <div className="destaque">
           <div>
-            <span style={{color: this.getColor(pctBat)}}>R$ {lucroBat.toFixed(2)}</span>
+            <span className="simbolo-moeda">R$</span>
+            <span style={{color: this.getColor(pctBat)}}>{lucroBat.toFixed(2)}</span>
             <span className="pct">({pctBat.toFixed(2)}%)</span></div>
         </div>
         <div>
