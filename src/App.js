@@ -19,7 +19,12 @@ class App extends Component {
   }
 
   componentDidMount() {
-    setInterval(this.atualizarCotacoes, 3000)
+    this.interval = setInterval(this.atualizarCotacoes, 3000)
+  }
+
+  componentWillUnmount() {
+    console.log('cler interval.')
+    clearInterval(this.interval)
   }
 
   atualizarCotacoes = () => {
@@ -49,6 +54,29 @@ class App extends Component {
     })
   }
 
+  handleCapitalChange = (e) => this.setState({capital: e.target.value})
+
+  getColor = (pct) => {
+    const colors = {
+      zerado: 'white',
+      normal: 'green',
+      bom: 'blue',
+      otimo: 'red'
+    }
+
+    if (pct < .3){
+      return colors.zerado
+    } else
+    if (pct < .5){
+      return colors.normal
+    } else
+    if (pct < .7){
+      return colors.bom
+    } else
+      return colors.otimo
+  }
+
+
   render() {
     const {tembtc, temeth, negocie, bat, capital, lucroBat, pctBat} = this.state
 
@@ -61,7 +89,7 @@ class App extends Component {
           <header>Investimento</header>
           <div className="cotacao">
             <div className="field">
-              <div>{capital}</div>
+              <input type="number" onChange={this.handleCapitalChange} value={capital}/>
             </div>
           </div>
           <header>BTC</header>
@@ -94,7 +122,9 @@ class App extends Component {
         <hr/>
         <header>Bat Lucro</header>
         <div className="destaque">
-          <div><span>R$ {lucroBat.toFixed(2)} => {pctBat.toFixed(2)}%</span></div>
+          <div>
+            <span style={{color: this.getColor(pctBat)}}>R$ {lucroBat.toFixed(2)}</span>
+            <span className="pct">({pctBat.toFixed(2)}%)</span></div>
         </div>
         <div>
           {this.state.atualizacao.toLocaleTimeString()}

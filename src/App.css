@@ -26,6 +26,11 @@ body {
 .destaque span {
   font-size: 4rem;
 }
+.destaque .pct {
+  font-size: 2rem;
+  display: inline-block;
+  margin-left: 8px;
+}
 
 .App-logo {
   animation: App-logo-spin infinite 20s linear;
