@@ -7,6 +7,10 @@ const TEMBTC_URL = "https://broker.tembtc.com.br/api/v3/btcbrl/ticker"
 const TEMETH_URL = "https://broker.tembtc.com.br/api/v3/ethbtc/ticker"
 const NEGOCIE_URL = "https://broker.negociecoins.com.br/api/v3/btcbrl/ticker"
 const BAT_URL = "https://broker.batexchange.com.br/api/v3/brleth/ticker"
+const POLONIEX = "https://poloniex.com/public?command=returnTicker"
+const MOEDAS_URL = "https://api.hgbrasil.com/finance"
+
+const DOLAR = 3.88
 
 class App extends Component {
   state = {
@@ -14,17 +18,34 @@ class App extends Component {
     tembtc: null,
     temeth: null,
     negocie: null,
-    capital: 11000,
-    atualizacao: new Date()
+    capital: 14000,
+    atualizacao: new Date(),
+    dolar: DOLAR,
+    conversaoUSD: 0
   }
 
+  valores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map( v => v * 1000 + 10000)
+
   componentDidMount() {
-    this.interval = setInterval(this.atualizarCotacoes, 3000)
+    this.interval = setInterval(this.atualizarCotacoes, 5000)
+    this.intervalPoly = setInterval(this.atualizarCotacaoExterna, 1000 * 60 * 10)
+    this.atualizarCotacaoExterna()
   }
 
   componentWillUnmount() {
-    console.log('cler interval.')
     clearInterval(this.interval)
+    clearInterval(this.intervalPoly)
+  }
+
+  atualizarCotacaoExterna = () => {
+      get(POLONIEX).then(resp => resp.USDC_BTC.last).then(resp => {
+        console.log('poloniex cncluido')
+        // get(MOEDAS_URL).then(resp => {
+        //   const dolar = resp.results.currencies.USD.buy
+        //   console.log('dolar cncluido')
+        // })
+        this.setState({conversaoUSD: this.state.dolar * resp})
+      })
   }
 
   atualizarCotacoes = () => {
@@ -32,7 +53,7 @@ class App extends Component {
     Promise.all([
       get(TEMBTC_URL).then(resp => resp),
       get(TEMETH_URL).then(resp => resp),
-      get(NEGOCIE_URL).then(resp => resp),
+      get(NEGOCIE_URL).then(resp => resp).catch(err => 0),
       get(BAT_URL).then(resp => resp),
     ]).then(resp => {
       const result = {
@@ -60,7 +81,7 @@ class App extends Component {
     const colors = {
       zerado: 'white',
       normal: 'green',
-      bom: 'blue',
+      bom: 'dodgerblue',
       otimo: 'red'
     }
 
@@ -89,7 +110,11 @@ class App extends Component {
           <header>Investimento</header>
           <div className="cotacao">
             <div className="field">
-              <input type="number" onChange={this.handleCapitalChange} value={capital}/>
+              <select type="number" onChange={this.handleCapitalChange} value={capital}>
+                {
+                  this.valores.map(v => <option value={v} selected={capital === v}>{v}</option>)
+                }
+              </select>
             </div>
           </div>
           <header>BTC</header>
@@ -117,6 +142,14 @@ class App extends Component {
               <label>Venda em BTC</label>
               <div>{temeth.buy}</div>
             </div>
+          </div>
+        </div>
+        <hr/>
+        <header>USD</header>
+        <div className="cotacao">
+          <div className="field">
+            <label>Cotação externa</label>
+            <div>{this.state.conversaoUSD}</div>
           </div>
         </div>
         <hr/>

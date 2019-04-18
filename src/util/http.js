@@ -14,7 +14,7 @@ export function get(url, payload = false, options = {}) {
     url = url + queryString;
   }
   options.method = "GET";
-  options.credentials ='same-origin';
+  // options.credentials ='include';
   return fetch(url,options).then(resp => {
     if (!resp.ok) {
       throw { status: resp.status, statusText: resp.statusText };
