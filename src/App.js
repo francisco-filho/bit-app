@@ -21,7 +21,8 @@ class App extends Component {
     capital: 14000,
     atualizacao: new Date(),
     dolar: DOLAR,
-    conversaoUSD: 0
+    conversaoUSD: 0,
+    venda: 0
   }
 
   valores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map( v => v * 1000 + 10000)
@@ -65,7 +66,8 @@ class App extends Component {
 
       let vlrCompra = capital / result.bat.sell
       let vlrVendaBtc  = vlrCompra * result.temeth.buy
-      let vlrVenda = vlrVendaBtc * result.negocie.buy
+      let venda = result.negocie.buy ? result.negocie.buy : this.state.venda
+      let vlrVenda = vlrVendaBtc * venda
       const taxas = (vlrVenda * 0.020) + 8
       const lucroBat = (vlrVenda - capital) - taxas
       const pctBat = (lucroBat / capital) * 100
@@ -76,6 +78,7 @@ class App extends Component {
   }
 
   handleCapitalChange = (e) => this.setState({capital: e.target.value})
+  handleVendaChange = (e) => this.setState({venda: e.target.value})
 
   getColor = (pct) => {
     const colors = {
@@ -99,10 +102,12 @@ class App extends Component {
 
 
   render() {
-    const {tembtc, temeth, negocie, bat, capital, lucroBat, pctBat} = this.state
+    const {venda, tembtc, temeth, negocie, bat, capital, lucroBat, pctBat} = this.state
 
     if (!tembtc)
       return null
+
+    // const venda = negocie.buy ? negocie.buy : this.state.venda
 
     return (
       <div className="App">
@@ -125,11 +130,11 @@ class App extends Component {
             </div>
             <div className="field">
               <label>Venda</label>
-              <div>{negocie.buy}</div>
+              <div><input type="number" value={venda} onChange={this.handleVendaChange}/></div>
             </div>
             <div className="field">
               <label>Diff</label>
-              <div>{negocie.buy - tembtc.sell}</div>
+              <div>{venda - tembtc.sell}</div>
             </div>
           </div>
           <header>ETH</header>
