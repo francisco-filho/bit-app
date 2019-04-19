@@ -66,14 +66,15 @@ class App extends Component {
 
       let vlrCompra = capital / result.bat.sell
       let vlrVendaBtc  = vlrCompra * result.temeth.buy
-      let venda = result.negocie.buy ? result.negocie.buy : this.state.venda
+      let venda = result.negocie.buy ? parseInt(result.negocie.buy) : this.state.venda
       let vlrVenda = vlrVendaBtc * venda
       const taxas = (vlrVenda * 0.020) + 8
       const lucroBat = (vlrVenda - capital) - taxas
       const pctBat = (lucroBat / capital) * 100
 
+      console.log(result.negocie)
 
-      this.setState({...result, lucroBat, pctBat, atualizacao: new Date()})
+      this.setState({...result, lucroBat, pctBat, atualizacao: new Date(), venda})
     })
   }
 
@@ -115,9 +116,9 @@ class App extends Component {
           <header>Investimento</header>
           <div className="cotacao">
             <div className="field">
-              <select type="number" onChange={this.handleCapitalChange} value={capital}>
+              <select type="number" onChange={this.handleCapitalChange} value={capital} defaultValue={venda}>
                 {
-                  this.valores.map(v => <option value={v} selected={capital === v}>{v}</option>)
+                  this.valores.map(v => <option value={v}>{v}</option>)
                 }
               </select>
             </div>
