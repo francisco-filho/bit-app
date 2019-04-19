@@ -29,7 +29,7 @@ class App extends Component {
 
   componentDidMount() {
     this.interval = setInterval(this.atualizarCotacoes, 5000)
-    this.intervalPoly = setInterval(this.atualizarCotacaoExterna, 1000 * 60 * 10)
+    this.intervalPoly = setInterval(this.atualizarCotacaoExterna, 1000 * 60 * 2)
     this.intervalDolar = setInterval(this.atualizarCotacaoDolar, 1000 * 60 * 15)
     this.atualizarCotacaoExterna()
     this.atualizarCotacaoDolar()
@@ -117,6 +117,17 @@ class App extends Component {
 
     return (
       <div className="App">
+        <header>Bat Lucro</header>
+        <div className="destaque">
+          <div>
+            <span className="simbolo-moeda">R$</span>
+            <span style={{color: this.getColor(pctBat)}}>{lucroBat.toFixed(2)}</span>
+            <span className="pct">({pctBat.toFixed(2)}%)</span></div>
+        </div>
+        <div>
+          {this.state.atualizacao.toLocaleTimeString()}
+        </div>
+        <hr/>
         <div className="cotacoes">
           <header>Investimento</header>
           <div className="cotacao">
@@ -177,17 +188,6 @@ class App extends Component {
             <div>{parseFloat(cotacaoDolar.lowestAsk).toFixed(2)} * ${dolar} => ${(cotacaoDolar.lowestAsk * dolar).toFixed(4)}
             => % {this.percentualAplicado(cotacaoDolar.lowestAsk * dolar, venda).toFixed(4)}</div>
           </div>
-        </div>
-        <hr/>
-        <header>Bat Lucro</header>
-        <div className="destaque">
-          <div>
-            <span className="simbolo-moeda">R$</span>
-            <span style={{color: this.getColor(pctBat)}}>{lucroBat.toFixed(2)}</span>
-            <span className="pct">({pctBat.toFixed(2)}%)</span></div>
-        </div>
-        <div>
-          {this.state.atualizacao.toLocaleTimeString()}
         </div>
       </div>
     );

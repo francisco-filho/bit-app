@@ -7,6 +7,11 @@ body {
   text-align: left;
 }
 
+input {
+  max-width: 5rem;
+  text-align: right;
+}
+
 header {
     font-weight: bold;
     color: dodgerblue;
