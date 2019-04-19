@@ -104,6 +104,8 @@ class App extends Component {
       return colors.otimo
   }
 
+  percentualAplicado = (cotacaoExterna, cotacao) => (cotacao - cotacaoExterna) / cotacaoExterna
+
 
   render() {
     const {cotacaoDolar, venda, tembtc, temeth, negocie, bat, capital, lucroBat, pctBat, dolar} = this.state
@@ -158,19 +160,22 @@ class App extends Component {
         <div className="cotacao">
           <div className="field">
             <label>HighestBid</label>
-            <div>{parseFloat(cotacaoDolar.highestBid).toFixed(2)} * ${dolar} => ${(cotacaoDolar.highestBid * dolar).toFixed(4)}</div>
+            <div>{parseFloat(cotacaoDolar.highestBid).toFixed(2)} * ${dolar} => ${(cotacaoDolar.highestBid * dolar).toFixed(4)}
+              => % {this.percentualAplicado(cotacaoDolar.highestBid * dolar, venda).toFixed(4)}</div>
           </div>
         </div>
         <div className="cotacao">
           <div className="field">
             <label>Last</label>
-            <div>{parseFloat(cotacaoDolar.last).toFixed(2)} * ${dolar} => ${(cotacaoDolar.last * dolar).toFixed(4)}</div>
+            <div>{parseFloat(cotacaoDolar.last).toFixed(2)} * ${dolar} => ${(cotacaoDolar.last * dolar).toFixed(4)}
+            => % {this.percentualAplicado(cotacaoDolar.last * dolar, venda).toFixed(4)}</div>
           </div>
         </div>
         <div className="cotacao">
           <div className="field">
             <label>lowestAsk</label>
-            <div>{parseFloat(cotacaoDolar.lowestAsk).toFixed(2)} * ${dolar} => ${(cotacaoDolar.lowestAsk * dolar).toFixed(4)}</div>
+            <div>{parseFloat(cotacaoDolar.lowestAsk).toFixed(2)} * ${dolar} => ${(cotacaoDolar.lowestAsk * dolar).toFixed(4)}
+            => % {this.percentualAplicado(cotacaoDolar.lowestAsk * dolar, venda).toFixed(4)}</div>
           </div>
         </div>
         <hr/>
