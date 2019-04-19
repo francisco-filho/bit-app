@@ -71,9 +71,6 @@ class App extends Component {
       const taxas = (vlrVenda * 0.020) + 8
       const lucroBat = (vlrVenda - capital) - taxas
       const pctBat = (lucroBat / capital) * 100
-
-      console.log(result.negocie)
-
       this.setState({...result, lucroBat, pctBat, atualizacao: new Date(), venda})
     })
   }
