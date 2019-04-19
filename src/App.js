@@ -11,7 +11,7 @@ const POLONIEX = "https://poloniex.com/public?command=returnTicker"
 const HG_KEY="18837869"
 const MOEDAS_URL = `https://api.hgbrasil.com/finance?format=json-cors&key=${HG_KEY}`
 
-const DOLAR = 3.88
+const DOLAR = 3.93
 
 class App extends Component {
   state = {
@@ -19,7 +19,7 @@ class App extends Component {
     tembtc: null,
     temeth: null,
     negocie: null,
-    capital: 14000,
+    capital: 15000,
     atualizacao: new Date(),
     dolar: DOLAR,
     venda: 0
@@ -158,19 +158,19 @@ class App extends Component {
         <div className="cotacao">
           <div className="field">
             <label>HighestBid</label>
-            <div>{cotacaoDolar.highestBid} * US${dolar} => ${(cotacaoDolar.highestBid * dolar).toFixed(4)}</div>
+            <div>{parseFloat(cotacaoDolar.highestBid).toFixed(2)} * ${dolar} => ${(cotacaoDolar.highestBid * dolar).toFixed(4)}</div>
           </div>
         </div>
         <div className="cotacao">
           <div className="field">
             <label>Last</label>
-            <div>{cotacaoDolar.last} * US${dolar} => ${(cotacaoDolar.last * dolar).toFixed(4)}</div>
+            <div>{parseFloat(cotacaoDolar.last).toFixed(2)} * ${dolar} => ${(cotacaoDolar.last * dolar).toFixed(4)}</div>
           </div>
         </div>
         <div className="cotacao">
           <div className="field">
             <label>lowestAsk</label>
-            <div>{cotacaoDolar.lowestAsk} * US${dolar} => ${(cotacaoDolar.lowestAsk * dolar).toFixed(4)}</div>
+            <div>{parseFloat(cotacaoDolar.lowestAsk).toFixed(2)} * ${dolar} => ${(cotacaoDolar.lowestAsk * dolar).toFixed(4)}</div>
           </div>
         </div>
         <hr/>
