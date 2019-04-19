@@ -8,7 +8,8 @@ const TEMETH_URL = "https://broker.tembtc.com.br/api/v3/ethbtc/ticker"
 const NEGOCIE_URL = "https://broker.negociecoins.com.br/api/v3/btcbrl/ticker"
 const BAT_URL = "https://broker.batexchange.com.br/api/v3/brleth/ticker"
 const POLONIEX = "https://poloniex.com/public?command=returnTicker"
-const MOEDAS_URL = "https://api.hgbrasil.com/finance"
+const HG_KEY="18837869"
+const MOEDAS_URL = `https://api.hgbrasil.com/finance?format=json-cors&key=${HG_KEY}`
 
 const DOLAR = 3.88
 
@@ -21,7 +22,6 @@ class App extends Component {
     capital: 14000,
     atualizacao: new Date(),
     dolar: DOLAR,
-    conversaoUSD: 0,
     venda: 0
   }
 
@@ -30,7 +30,9 @@ class App extends Component {
   componentDidMount() {
     this.interval = setInterval(this.atualizarCotacoes, 5000)
     this.intervalPoly = setInterval(this.atualizarCotacaoExterna, 1000 * 60 * 10)
+    this.intervalDolar = setInterval(this.atualizarCotacaoDolar, 1000 * 60 * 15)
     this.atualizarCotacaoExterna()
+    this.atualizarCotacaoDolar()
   }
 
   componentWillUnmount() {
@@ -38,14 +40,18 @@ class App extends Component {
     clearInterval(this.intervalPoly)
   }
 
+  atualizarCotacaoDolar = () => {
+    get(MOEDAS_URL).then(resp => {
+      const dolar = resp.results.currencies.USD.buy
+      console.log('dolar cncluido')
+      this.setState({dolar})
+    })
+  }
+
   atualizarCotacaoExterna = () => {
-      get(POLONIEX).then(resp => resp.USDC_BTC.last).then(resp => {
+      get(POLONIEX).then(resp => resp.USDC_BTC).then(resp => {
         console.log('poloniex cncluido')
-        // get(MOEDAS_URL).then(resp => {
-        //   const dolar = resp.results.currencies.USD.buy
-        //   console.log('dolar cncluido')
-        // })
-        this.setState({conversaoUSD: this.state.dolar * resp})
+        this.setState({ cotacaoDolar: resp })
       })
   }
 
@@ -68,7 +74,7 @@ class App extends Component {
       let vlrVendaBtc  = vlrCompra * result.temeth.buy
       let venda = result.negocie.buy ? parseInt(result.negocie.buy) : this.state.venda
       let vlrVenda = vlrVendaBtc * venda
-      const taxas = (vlrVenda * 0.020) + 8
+      const taxas = (vlrVenda * 0.020) + 5
       const lucroBat = (vlrVenda - capital) - taxas
       const pctBat = (lucroBat / capital) * 100
       this.setState({...result, lucroBat, pctBat, atualizacao: new Date(), venda})
@@ -100,7 +106,7 @@ class App extends Component {
 
 
   render() {
-    const {venda, tembtc, temeth, negocie, bat, capital, lucroBat, pctBat} = this.state
+    const {cotacaoDolar, venda, tembtc, temeth, negocie, bat, capital, lucroBat, pctBat, dolar} = this.state
 
     if (!tembtc)
       return null
@@ -148,11 +154,23 @@ class App extends Component {
           </div>
         </div>
         <hr/>
-        <header>USD</header>
+        <header>Cotação Externa</header>
         <div className="cotacao">
           <div className="field">
-            <label>Cotação externa</label>
-            <div>{this.state.conversaoUSD}</div>
+            <label>HighestBid</label>
+            <div>{cotacaoDolar.highestBid} * US${dolar} => ${(cotacaoDolar.highestBid * dolar).toFixed(4)}</div>
+          </div>
+        </div>
+        <div className="cotacao">
+          <div className="field">
+            <label>Last</label>
+            <div>{cotacaoDolar.last} * US${dolar} => ${(cotacaoDolar.last * dolar).toFixed(4)}</div>
+          </div>
+        </div>
+        <div className="cotacao">
+          <div className="field">
+            <label>lowestAsk</label>
+            <div>{cotacaoDolar.lowestAsk} * US${dolar} => ${(cotacaoDolar.lowestAsk * dolar).toFixed(4)}</div>
           </div>
         </div>
         <hr/>
