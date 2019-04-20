@@ -113,6 +113,7 @@ class App extends Component {
 
   percentualAplicado = (cotacaoExterna, cotacao) => (cotacao - cotacaoExterna) / cotacaoExterna
 
+  format = (numero) => numero.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})
 
   render() {
     const {cotacaoDolar, venda, tembtc, temeth, negocie, bat, capital, lucroBat, pctBat,
@@ -184,7 +185,7 @@ class App extends Component {
             <div className="field">
               <label>Venda</label>
               <div style={{color: this.percentualAplicado(cotacaoDolar.highestBid * dolar * PCT_CONVERSAO, venda) + 1 > PCT_CONVERSAO ? 'green':'white'}}>
-                <span>${(cotacaoDolar.highestBid * dolar * PCT_CONVERSAO).toFixed(2)}</span>
+                <span>{this.format(cotacaoDolar.highestBid * dolar * PCT_CONVERSAO)}</span>
               </div>
             </div>
           </div>
@@ -192,7 +193,7 @@ class App extends Component {
             <div className="field">
               <label>Dolar</label>
               <div>
-                <span>{dolar}</span>
+                <span>{this.format(dolar)}</span>
               </div>
             </div>
           </div>
