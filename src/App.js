@@ -44,6 +44,7 @@ class App extends Component {
   componentWillUnmount() {
     clearInterval(this.interval)
     clearInterval(this.intervalPoly)
+    clearInterval(this.intervalDolar)
   }
 
   atualizarCotacaoDolar = () => {
@@ -134,7 +135,7 @@ class App extends Component {
 
     return (
       <div className="App">
-        <header><span>Retorno</span>
+        <header><span>ROI Aproximado</span>
         <div>
           {this.state.atualizacao.toLocaleTimeString()}
         </div>
@@ -212,7 +213,7 @@ class App extends Component {
           </div>
         </div>
         <hr/>
-        <header>Cotação Externa</header>
+        <header>BTC - Cotação Externa</header>
         <div className="cotacao">
           <table>
             <thead>
