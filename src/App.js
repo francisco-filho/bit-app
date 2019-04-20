@@ -212,19 +212,19 @@ class App extends Component {
             <tbody>
               <tr>
                 <td>HighestBid</td>
-                <td>{cotacaoDolar.highestBid}</td>
+                <td>{parseFloat(cotacaoDolar.highestBid).toFixed(4)}</td>
                 <td>{(cotacaoDolar.highestBid * dolar).toFixed(4)}</td>
                 <td>{this.percentualAplicado(cotacaoDolar.highestBid * dolar, venda).toFixed(4)}</td>
               </tr>
               <tr>
                 <td>Last</td>
-                <td>{cotacaoDolar.last}</td>
+                <td>{parseFloat(cotacaoDolar.last).toFixed(4)}</td>
                 <td>{(cotacaoDolar.last* dolar).toFixed(4)}</td>
                 <td>{this.percentualAplicado(cotacaoDolar.last* dolar, venda).toFixed(4)}</td>
               </tr>
               <tr>
                 <td>lowestAsk</td>
-                <td>{cotacaoDolar.lowestAsk}</td>
+                <td>{parseFloat(cotacaoDolar.lowestAsk).toFixed(4)}</td>
                 <td>{(cotacaoDolar.lowestAsk* dolar).toFixed(4)}</td>
                 <td>{this.percentualAplicado(cotacaoDolar.lowestAsk* dolar, venda).toFixed(4)}</td>
               </tr>
