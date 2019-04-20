@@ -184,7 +184,7 @@ class App extends Component {
           <div className="cotacao">
             <div className="field">
               <label>Compra em R$</label>
-              <div>{bat.sell}</div>
+              <div>{this.format(bat.sell)}</div>
             </div>
             <div className="field">
               <label>Venda em BTC</label>
