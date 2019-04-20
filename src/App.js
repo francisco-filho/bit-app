@@ -169,6 +169,14 @@ class App extends Component {
           </div>
         </div>
         <hr/>
+        <header>Sugestão</header>
+        <div className="cotacao">
+          <div className="field">
+            <label>Venda</label>
+            <div>${(cotacaoDolar.highestBid * dolar * PCT_CONVERSAO).toFixed(2)}</div>
+          </div>
+        </div>
+        <hr/>
         <header>Cotação Externa</header>
         <div className="cotacao">
           <div className="field">
@@ -189,13 +197,6 @@ class App extends Component {
             <label>lowestAsk</label>
             <div>{parseFloat(cotacaoDolar.lowestAsk).toFixed(2)} * ${dolar} => ${(cotacaoDolar.lowestAsk * dolar).toFixed(4)}
             => % {this.percentualAplicado(cotacaoDolar.lowestAsk * dolar, venda).toFixed(4)}</div>
-          </div>
-        </div>
-        <header>Sugestão</header>
-        <div className="cotacao">
-          <div className="field">
-            <label>Venda</label>
-            <div>${(cotacaoDolar.highestBid * dolar * PCT_CONVERSAO).toFixed(2)}</div>
           </div>
         </div>
       </div>
