@@ -183,7 +183,7 @@ class App extends Component {
         <div className="col2">
           <div className="cotacao">
             <div className="field">
-              <label>Venda</label>
+              <label>Venda ({PCT_CONVERSAO}%)</label>
               <div style={{color: this.percentualAplicado(cotacaoDolar.highestBid * dolar * PCT_CONVERSAO, venda) + 1 > PCT_CONVERSAO ? 'green':'white'}}>
                 <span>{this.format(cotacaoDolar.highestBid * dolar * PCT_CONVERSAO)}</span>
               </div>
