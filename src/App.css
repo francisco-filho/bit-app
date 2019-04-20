@@ -18,7 +18,7 @@ input {
 
 hr {
   border: none;
-  border-bottom: 1px solid rgba(0, 0, 0, .3);
+  border-bottom: 1px solid rgba(0, 0, 0, .4);
 }
 
 header {
@@ -34,7 +34,8 @@ header {
 }
 
 .cotacao label {
-  font-weight: bold;
+  font-size: .8rem;
+    color: #ccc;
 }
 
 .field {

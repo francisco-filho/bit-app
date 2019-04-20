@@ -10,7 +10,7 @@ const BAT_URL = "https://broker.batexchange.com.br/api/v3/brleth/ticker"
 const POLONIEX = "https://poloniex.com/public?command=returnTicker"
 const HG_KEY="18837869"
 const MOEDAS_URL = `https://api.hgbrasil.com/finance?format=json-cors&key=${HG_KEY}`
-const PCT_CONVERSAO = 1.052;
+const PCT_CONVERSAO = 1.053;
 
 const DOLAR = 3.93
 
@@ -46,14 +46,12 @@ class App extends Component {
   atualizarCotacaoDolar = () => {
     get(MOEDAS_URL).then(resp => {
       const dolar = resp.results.currencies.USD.buy
-      console.log('dolar cncluido')
       this.setState({dolar})
     })
   }
 
   atualizarCotacaoExterna = () => {
       get(POLONIEX).then(resp => resp).then(resp => {
-        console.log('poloniex cncluido')
         this.setState({ cotacaoDolar: resp.USDC_BTC, cotacaoExternaBTC_ETH: resp.BTC_ETH })
       })
   }
