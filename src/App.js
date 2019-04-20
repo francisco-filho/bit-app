@@ -161,7 +161,7 @@ class App extends Component {
               <div><input type="number" value={venda} onChange={this.handleVendaChange}/></div>
             </div>
             <div className="field">
-              <label>Diff</label>
+              <label>Diferença</label>
               <div>{(venda - tembtc.sell).toFixed(2)}</div>
             </div>
           </div>

@@ -34,8 +34,8 @@ header {
 }
 
 .cotacao label {
-  font-size: .8rem;
-    color: #ccc;
+  /*font-size: 8rem;*/
+    color: #aaa;
 }
 
 .field {
