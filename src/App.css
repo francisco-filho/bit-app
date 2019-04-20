@@ -11,9 +11,21 @@ body {
   text-align: left;
 }
 
+.col2 {
+  display: flex;
+}
+
+.col2>div {
+  flex: 1;
+}
+
 input {
   max-width: 5rem;
   text-align: right;
+}
+
+select {
+  margin: .2rem 0;
 }
 
 hr {
@@ -58,6 +70,30 @@ header {
 
 .lucro {
   font-weight: bold;
+}
+
+table {
+    width: 100%;
+    font-size: 0.8rem;
+    border: none;
+    border-collapse: collapse;
+    font-weight: normal;
+}
+
+table th {
+  font-weight: normal;
+    text-align: center;
+  color: #bbb;
+}
+
+table th, table td {
+    padding: 2px 4px;
+    border: 1px solid #ccc;
+    border-color: rgba(0, 0, 0, .8);
+}
+
+table td:first-of-type {
+  font-weight: 500;
 }
 
 .App-logo {

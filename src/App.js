@@ -179,37 +179,79 @@ class App extends Component {
         </div>
         <hr/>
         <header>Sugestão</header>
-        <div className="cotacao">
-          <div className="field">
-            <label>Venda</label>
-            <div style={{color: this.percentualAplicado(cotacaoDolar.highestBid * dolar * PCT_CONVERSAO, venda) + 1 > PCT_CONVERSAO ? 'green':'white'}}>
-              <span>${(cotacaoDolar.highestBid * dolar * PCT_CONVERSAO).toFixed(2)}</span>
+        <div className="col2">
+          <div className="cotacao">
+            <div className="field">
+              <label>Venda</label>
+              <div style={{color: this.percentualAplicado(cotacaoDolar.highestBid * dolar * PCT_CONVERSAO, venda) + 1 > PCT_CONVERSAO ? 'green':'white'}}>
+                <span>${(cotacaoDolar.highestBid * dolar * PCT_CONVERSAO).toFixed(2)}</span>
+              </div>
+            </div>
+          </div>
+          <div className="cotacao">
+            <div className="field">
+              <label>Dolar</label>
+              <div>
+                <span>{dolar}</span>
+              </div>
             </div>
           </div>
         </div>
         <hr/>
         <header>Cotação Externa</header>
         <div className="cotacao">
-          <div className="field">
-            <label>HighestBid</label>
-            <div>{parseFloat(cotacaoDolar.highestBid).toFixed(2)} * ${dolar} => ${(cotacaoDolar.highestBid * dolar).toFixed(4)}
-              => % {this.percentualAplicado(cotacaoDolar.highestBid * dolar, venda).toFixed(4)}</div>
-          </div>
+          <table>
+            <thead>
+            <tr>
+              <th>Item</th>
+              <th>Cotação</th>
+              <th>Valor em R$</th>
+              <th>%</th>
+            </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>HighestBid</td>
+                <td>{cotacaoDolar.highestBid}</td>
+                <td>{(cotacaoDolar.highestBid * dolar).toFixed(4)}</td>
+                <td>{this.percentualAplicado(cotacaoDolar.highestBid * dolar, venda).toFixed(4)}</td>
+              </tr>
+              <tr>
+                <td>Last</td>
+                <td>{cotacaoDolar.last}</td>
+                <td>{(cotacaoDolar.last* dolar).toFixed(4)}</td>
+                <td>{this.percentualAplicado(cotacaoDolar.last* dolar, venda).toFixed(4)}</td>
+              </tr>
+              <tr>
+                <td>lowestAsk</td>
+                <td>{cotacaoDolar.lowestAsk}</td>
+                <td>{(cotacaoDolar.lowestAsk* dolar).toFixed(4)}</td>
+                <td>{this.percentualAplicado(cotacaoDolar.lowestAsk* dolar, venda).toFixed(4)}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-        <div className="cotacao">
-          <div className="field">
-            <label>Last</label>
-            <div>{parseFloat(cotacaoDolar.last).toFixed(2)} * ${dolar} => ${(cotacaoDolar.last * dolar).toFixed(4)}
-            => % {this.percentualAplicado(cotacaoDolar.last * dolar, venda).toFixed(4)}</div>
-          </div>
-        </div>
-        <div className="cotacao">
-          <div className="field">
-            <label>lowestAsk</label>
-            <div>{parseFloat(cotacaoDolar.lowestAsk).toFixed(2)} * ${dolar} => ${(cotacaoDolar.lowestAsk * dolar).toFixed(4)}
-            => % {this.percentualAplicado(cotacaoDolar.lowestAsk * dolar, venda).toFixed(4)}</div>
-          </div>
-        </div>
+        {/*<div className="cotacao">*/}
+          {/*<div className="field">*/}
+            {/*<label>HighestBid</label>*/}
+            {/*<div>{parseFloat(cotacaoDolar.highestBid).toFixed(2)} * ${dolar} => ${(cotacaoDolar.highestBid * dolar).toFixed(4)}*/}
+              {/*=> % {this.percentualAplicado(cotacaoDolar.highestBid * dolar, venda).toFixed(4)}</div>*/}
+          {/*</div>*/}
+        {/*</div>*/}
+        {/*<div className="cotacao">*/}
+          {/*<div className="field">*/}
+            {/*<label>Last</label>*/}
+            {/*<div>{parseFloat(cotacaoDolar.last).toFixed(2)} * ${dolar} => ${(cotacaoDolar.last * dolar).toFixed(4)}*/}
+            {/*=> % {this.percentualAplicado(cotacaoDolar.last * dolar, venda).toFixed(4)}</div>*/}
+          {/*</div>*/}
+        {/*</div>*/}
+        {/*<div className="cotacao">*/}
+          {/*<div className="field">*/}
+            {/*<label>lowestAsk</label>*/}
+            {/*<div>{parseFloat(cotacaoDolar.lowestAsk).toFixed(2)} * ${dolar} => ${(cotacaoDolar.lowestAsk * dolar).toFixed(4)}*/}
+            {/*=> % {this.percentualAplicado(cotacaoDolar.lowestAsk * dolar, venda).toFixed(4)}</div>*/}
+          {/*</div>*/}
+        {/*</div>*/}
       </div>
     );
   }
