@@ -20,7 +20,7 @@ class App extends Component {
     tembtc: null,
     temeth: null,
     negocie: null,
-    capital: 15000,
+    capital: 16000,
     atualizacao: new Date(),
     dolar: DOLAR,
     venda: 0,
@@ -146,7 +146,7 @@ class App extends Component {
             <div className="field">
               <select type="number" onChange={this.handleCapitalChange} value={capital} defaultValue={venda}>
                 {
-                  this.valores.map(v => <option value={v}>{v}</option>)
+                  this.valores.map(v => <option value={v}>{this.format(v)}</option>)
                 }
               </select>
             </div>

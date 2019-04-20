@@ -21,11 +21,14 @@ body {
 
 input {
   max-width: 5rem;
+    font-size: 1rem;
   text-align: right;
 }
 
 select {
+  font-size: 1rem;
   margin: .2rem 0;
+    padding: 2px;
 }
 
 hr {
