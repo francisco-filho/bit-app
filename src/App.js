@@ -23,13 +23,15 @@ class App extends Component {
     capital: 15000,
     atualizacao: new Date(),
     dolar: DOLAR,
-    venda: 0
+    venda: 0,
+    atualizando: false,
+    cotacaoExternaBTC_ETH: 0
   }
 
   valores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map( v => v * 1000 + 10000)
 
   componentDidMount() {
-    this.interval = setInterval(this.atualizarCotacoes, 5000)
+    this.interval = setInterval(this.atualizarCotacoes, 3000)
     this.intervalPoly = setInterval(this.atualizarCotacaoExterna, 1000 * 60 * 2)
     this.intervalDolar = setInterval(this.atualizarCotacaoDolar, 1000 * 60 * 15)
     this.atualizarCotacaoExterna()
@@ -50,14 +52,15 @@ class App extends Component {
   }
 
   atualizarCotacaoExterna = () => {
-      get(POLONIEX).then(resp => resp.USDC_BTC).then(resp => {
+      get(POLONIEX).then(resp => resp).then(resp => {
         console.log('poloniex cncluido')
-        this.setState({ cotacaoDolar: resp })
+        this.setState({ cotacaoDolar: resp.USDC_BTC, cotacaoExternaBTC_ETH: resp.BTC_ETH })
       })
   }
 
   atualizarCotacoes = () => {
     const {capital} = this.state
+    this.setState({atualizando: true})
     Promise.all([
       get(TEMBTC_URL).then(resp => resp),
       get(TEMETH_URL).then(resp => resp),
@@ -78,11 +81,16 @@ class App extends Component {
       const taxas = (vlrVenda * 0.020) + 5
       const lucroBat = (vlrVenda - capital) - taxas
       const pctBat = (lucroBat / capital) * 100
-      this.setState({...result, lucroBat, pctBat, atualizacao: new Date(), venda})
+      this.setState({...result, lucroBat, pctBat, atualizacao: new Date(), venda, atualizando: false})
     })
   }
 
-  handleCapitalChange = (e) => this.setState({capital: e.target.value})
+  handleCapitalChange = (e) => {
+    this.setState({capital: e.target.value}, () => {
+      this.atualizarCotacoes()
+      this.atualizarCotacaoExterna()
+    })
+  }
   handleVendaChange = (e) => this.setState({venda: e.target.value})
 
   getColor = (pct) => {
@@ -109,7 +117,10 @@ class App extends Component {
 
 
   render() {
-    const {cotacaoDolar, venda, tembtc, temeth, negocie, bat, capital, lucroBat, pctBat, dolar} = this.state
+    const {cotacaoDolar, venda, tembtc, temeth, negocie, bat, capital, lucroBat, pctBat,
+        dolar,
+        cotacaoExternaBTC_ETH
+      } = this.state
 
     if (!tembtc)
       return null
@@ -164,7 +175,7 @@ class App extends Component {
             </div>
             <div className="field">
               <label>Venda em BTC</label>
-              <div>{temeth.buy}</div>
+              <div>{temeth.buy} <em>({cotacaoExternaBTC_ETH.highestBid})</em></div>
             </div>
           </div>
         </div>
