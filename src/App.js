@@ -96,14 +96,14 @@ class App extends Component {
 
   getColor = (pct) => {
     const colors = {
-      zerado: 'white',
-      normal: '#20b020',
-      bom: 'dodgerblue',
-      otimo: 'red'
+      ruim: 'red',
+      normal: 'dodgerblue',
+      bom: '#20b020',
+      otimo: '#9400a5'
     }
 
     if (pct < .3){
-      return colors.zerado
+      return colors.ruim
     } else
     if (pct < .5){
       return colors.normal
