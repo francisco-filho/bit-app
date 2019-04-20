@@ -10,6 +10,7 @@ const BAT_URL = "https://broker.batexchange.com.br/api/v3/brleth/ticker"
 const POLONIEX = "https://poloniex.com/public?command=returnTicker"
 const HG_KEY="18837869"
 const MOEDAS_URL = `https://api.hgbrasil.com/finance?format=json-cors&key=${HG_KEY}`
+const PCT_CONVERSAO = 1.0523;
 
 const DOLAR = 3.93
 
@@ -117,7 +118,7 @@ class App extends Component {
 
     return (
       <div className="App">
-        <header>Bat Lucro</header>
+        <header>Retorno</header>
         <div className="destaque">
           <div>
             <span className="simbolo-moeda">R$</span>
@@ -187,6 +188,13 @@ class App extends Component {
             <label>lowestAsk</label>
             <div>{parseFloat(cotacaoDolar.lowestAsk).toFixed(2)} * ${dolar} => ${(cotacaoDolar.lowestAsk * dolar).toFixed(4)}
             => % {this.percentualAplicado(cotacaoDolar.lowestAsk * dolar, venda).toFixed(4)}</div>
+          </div>
+        </div>
+        <header>Sugestão</header>
+        <div className="cotacao">
+          <div className="field">
+            <label>Venda</label>
+            <div>${(cotacaoDolar.highestBid * dolar * PCT_CONVERSAO).toFixed(2)}</div>
           </div>
         </div>
       </div>
