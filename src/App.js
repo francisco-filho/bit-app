@@ -120,7 +120,7 @@ class App extends Component {
 
   format = (numero, moeda=false) => {
     const style = moeda ? {style: 'currency', currency: 'BRL'} : {}
-    return numero.toLocaleString('pt-BR', style)
+    return numero.toLocaleString('pt-BR', {...style, maximumFractionDigits: 2})
   }
 
   render() {
@@ -217,9 +217,9 @@ class App extends Component {
           <table>
             <thead>
             <tr>
-              <th>Item</th>
               <th>Cotação</th>
-              <th>Valor em R$</th>
+              <th>US$</th>
+              <th>R$</th>
               <th>%</th>
             </tr>
             </thead>

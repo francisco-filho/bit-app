@@ -26,7 +26,7 @@ input {
 }
 
 select {
-    font-size: 1rem;
+    font-size: 1.2rem;
     margin: .2rem 0;
     padding: 2px;
     border: 1px solid dodgerblue;
