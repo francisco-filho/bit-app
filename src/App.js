@@ -10,14 +10,9 @@ const BAT_URL = "https://broker.batexchange.com.br/api/v3/brleth/ticker"
 const POLONIEX = "https://poloniex.com/public?command=returnTicker"
 const HG_KEY="18837869"
 const MOEDAS_URL = `https://api.hgbrasil.com/finance?format=json-cors&key=${HG_KEY}`
-const PCT_CONVERSAO = 1.052;
+const PCT_CONVERSAO = 1.0521;
 
 const DOLAR = 3.93
-
-/* TODO
-  - Indicador de progresso
-  - editar % conversão
- */
 
 class App extends Component {
   state = {

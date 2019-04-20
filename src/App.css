@@ -63,6 +63,7 @@ header {
 }
 .destaque {
     text-align: right;
+    text-shadow: 0 2px 3px #222;
 }
 .destaque span {
   font-size: 2.8rem;
