@@ -10,7 +10,7 @@ const BAT_URL = "https://broker.batexchange.com.br/api/v3/brleth/ticker"
 const POLONIEX = "https://poloniex.com/public?command=returnTicker"
 const HG_KEY="18837869"
 const MOEDAS_URL = `https://api.hgbrasil.com/finance?format=json-cors&key=${HG_KEY}`
-const PCT_CONVERSAO = 1.0523;
+const PCT_CONVERSAO = 1.0505;
 
 const DOLAR = 3.93
 
@@ -175,7 +175,7 @@ class App extends Component {
             </div>
             <div className="field">
               <label>Venda em BTC</label>
-              <div>{temeth.buy} <em>({cotacaoExternaBTC_ETH.highestBid})</em></div>
+              <div>{temeth.buy} <span>({cotacaoExternaBTC_ETH.highestBid})</span></div>
             </div>
           </div>
         </div>
@@ -184,7 +184,9 @@ class App extends Component {
         <div className="cotacao">
           <div className="field">
             <label>Venda</label>
-            <div>${(cotacaoDolar.highestBid * dolar * PCT_CONVERSAO).toFixed(2)}</div>
+            <div style={{color: this.percentualAplicado(cotacaoDolar.highestBid * dolar * PCT_CONVERSAO, venda) + 1 > PCT_CONVERSAO ? 'green':'white'}}>
+              <span>${(cotacaoDolar.highestBid * dolar * PCT_CONVERSAO).toFixed(2)}</span>
+            </div>
           </div>
         </div>
         <hr/>
