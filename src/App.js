@@ -121,7 +121,7 @@ class App extends Component {
         <div className="destaque">
           <div>
             <span className="simbolo-moeda">R$</span>
-            <span style={{color: this.getColor(pctBat)}}>{lucroBat.toFixed(2)}</span>
+            <span style={{color: this.getColor(pctBat), fontFamily: "Georgia"}}>{lucroBat.toFixed(2)}</span>
             <span className="pct">({pctBat.toFixed(2)}%)</span></div>
         </div>
         <div>
@@ -151,7 +151,7 @@ class App extends Component {
             </div>
             <div className="field">
               <label>Diff</label>
-              <div>{venda - tembtc.sell}</div>
+              <div>{(venda - tembtc.sell).toFixed(2)}</div>
             </div>
           </div>
           <header>ETH</header>
