@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import './App.css';
 import {get} from './util/http'
 import 'whatwg-fetch'
-import {Slider} from "primereact/slider";
-import 'primereact/resources/themes/nova-light/theme.css';
-import 'primereact/resources/primereact.min.css';
+// import {Slider} from "primereact/slider";
+// import 'primereact/resources/themes/nova-light/theme.css';
+// import 'primereact/resources/primereact.min.css';
 
 const TEMBTC_URL = "https://broker.tembtc.com.br/api/v3/btcbrl/ticker"
 const TEMETH_URL = "https://broker.tembtc.com.br/api/v3/ethbtc/ticker"
@@ -87,7 +87,7 @@ class App extends Component {
   }
 
   handleCapitalChange = (e) => {
-    this.setState({capital: e.value}, () => {
+    this.setState({capital: e.target.value}, () => {
       this.atualizarCotacoes()
       this.atualizarCotacaoExterna()
     })
@@ -149,14 +149,14 @@ class App extends Component {
         <div className="cotacoes">
           <header>Investimento</header>
           <div className="cotacao">
-            <div className="field slider">
-              <Slider min={5000} max={20000} step={1000} value={capital} onChange={this.handleCapitalChange}/>
-              <span>{this.format(capital, true)}</span>
-{/*              <select type="number" onChange={this.handleCapitalChange} value={capital} defaultValue={venda}>
+            <div className="field">
+              {/*<Slider min={5000} max={20000} step={1000} value={capital} onChange={this.handleCapitalChange}/>*/}
+              {/*<span>{this.format(capital, true)}</span>*/}
+              <select type="number" onChange={this.handleCapitalChange} value={capital} defaultValue={venda}>
                 {
                   this.valores.map(v => <option value={v}>{this.format(v, true)}</option>)
                 }
-              </select>*/}
+              </select>
             </div>
           </div>
           <header>BTC</header>
