@@ -154,7 +154,7 @@ class App extends Component {
             <div className="field">
               <select type="number" onChange={this.handleCapitalChange} value={capital} defaultValue={venda}>
                 {
-                  this.valores.map(v => <option value={v}>{this.format(v)}</option>)
+                  this.valores.map(v => <option value={v}>{this.format(v, true)}</option>)
                 }
               </select>
             </div>

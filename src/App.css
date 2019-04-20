@@ -26,9 +26,13 @@ input {
 }
 
 select {
-  font-size: 1rem;
-  margin: .2rem 0;
+    font-size: 1rem;
+    margin: .2rem 0;
     padding: 2px;
+    border: 1px solid dodgerblue;
+    padding: 4px;
+    color: #fff;
+    background-color: #222;
 }
 
 hr {
