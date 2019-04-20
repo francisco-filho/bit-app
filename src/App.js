@@ -10,9 +10,14 @@ const BAT_URL = "https://broker.batexchange.com.br/api/v3/brleth/ticker"
 const POLONIEX = "https://poloniex.com/public?command=returnTicker"
 const HG_KEY="18837869"
 const MOEDAS_URL = `https://api.hgbrasil.com/finance?format=json-cors&key=${HG_KEY}`
-const PCT_CONVERSAO = 1.0514;
+const PCT_CONVERSAO = 1.052;
 
 const DOLAR = 3.93
+
+/* TODO
+  - Indicador de progresso
+  - editar % conversão
+ */
 
 class App extends Component {
   state = {
@@ -159,7 +164,12 @@ class App extends Component {
             </div>
             <div className="field">
               <label>Venda</label>
-              <div><input type="number" value={venda} onChange={this.handleVendaChange}/></div>
+              <div>
+                {negocie.buy ?
+                  <span>{venda}</span> :
+                  <input type="number" value={venda} onChange={this.handleVendaChange}/>
+                }
+                </div>
             </div>
             <div className="field">
               <label>Diferença</label>
