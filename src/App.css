@@ -61,6 +61,15 @@ header {
     font-size: 1.2rem;
     margin-right: 20px;
 }
+.p-slider {
+    margin: 8px 0;
+}
+.field.slider {
+    text-align: center;
+    width: 100%;
+}
+
+
 .destaque {
     text-align: right;
     text-shadow: 0 2px 3px #222;
