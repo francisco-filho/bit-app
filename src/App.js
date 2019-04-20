@@ -10,7 +10,7 @@ const BAT_URL = "https://broker.batexchange.com.br/api/v3/brleth/ticker"
 const POLONIEX = "https://poloniex.com/public?command=returnTicker"
 const HG_KEY="18837869"
 const MOEDAS_URL = `https://api.hgbrasil.com/finance?format=json-cors&key=${HG_KEY}`
-const PCT_CONVERSAO = 1.0505;
+const PCT_CONVERSAO = 1.052;
 
 const DOLAR = 3.93
 
@@ -96,7 +96,7 @@ class App extends Component {
   getColor = (pct) => {
     const colors = {
       zerado: 'white',
-      normal: 'green',
+      normal: '#20b020',
       bom: 'dodgerblue',
       otimo: 'red'
     }
@@ -137,7 +137,7 @@ class App extends Component {
         <div className="destaque">
           <div style={{color: this.getColor(pctBat)}}>
             <span className="simbolo-moeda">R$</span>
-            <span>{lucroBat.toFixed(2)}</span>
+            <span className="lucro">{lucroBat.toFixed(2)}</span>
             <span className="pct">({pctBat.toFixed(2)}%)</span></div>
         </div>
         <hr/>
