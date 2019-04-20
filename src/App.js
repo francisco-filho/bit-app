@@ -118,7 +118,10 @@ class App extends Component {
 
   percentualAplicado = (cotacaoExterna, cotacao) => (cotacao - cotacaoExterna) / cotacaoExterna
 
-  format = (numero) => numero.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})
+  format = (numero, moeda=false) => {
+    const style = moeda ? {style: 'currency', currency: 'BRL'} : {}
+    return numero.toLocaleString('pt-BR', style)
+  }
 
   render() {
     const {cotacaoDolar, venda, tembtc, temeth, negocie, bat, capital, lucroBat, pctBat,
@@ -141,8 +144,8 @@ class App extends Component {
         <div className="destaque">
           <div style={{color: this.getColor(pctBat)}}>
             <span className="simbolo-moeda">R$</span>
-            <span className="lucro">{lucroBat.toFixed(2)}</span>
-            <span className="pct">({pctBat.toFixed(2)}%)</span></div>
+            <span className="lucro">{this.format(lucroBat)}</span>
+            <span className="pct">({this.format(pctBat)}%)</span></div>
         </div>
         <hr/>
         <div className="cotacoes">
@@ -160,20 +163,20 @@ class App extends Component {
           <div className="cotacao">
             <div className="field">
               <label>Compra</label>
-              <div>{tembtc.sell}</div>
+              <div>{this.format(tembtc.sell)}</div>
             </div>
             <div className="field">
               <label>Venda</label>
               <div>
                 {negocie.buy ?
-                  <span>{venda}</span> :
+                  <span>{this.format(venda)}</span> :
                   <input type="number" value={venda} onChange={this.handleVendaChange}/>
                 }
                 </div>
             </div>
             <div className="field">
               <label>Diferença</label>
-              <div>{(venda - tembtc.sell).toFixed(2)}</div>
+              <div>{this.format(venda - tembtc.sell)}</div>
             </div>
           </div>
           <header>ETH</header>
@@ -195,7 +198,7 @@ class App extends Component {
             <div className="field">
               <label>Venda ({PCT_CONVERSAO}%)</label>
               <div style={{color: this.percentualAplicado(cotacaoDolar.highestBid * dolar * PCT_CONVERSAO, venda) + 1 > PCT_CONVERSAO ? 'green':'white'}}>
-                <span>{this.format(cotacaoDolar.highestBid * dolar * PCT_CONVERSAO)}</span>
+                <span>{this.format(cotacaoDolar.highestBid * dolar * PCT_CONVERSAO, true)}</span>
               </div>
             </div>
           </div>
@@ -203,7 +206,7 @@ class App extends Component {
             <div className="field">
               <label>Dolar</label>
               <div>
-                <span>{this.format(dolar)}</span>
+                <span>{this.format(dolar, true)}</span>
               </div>
             </div>
           </div>
@@ -222,21 +225,21 @@ class App extends Component {
             </thead>
             <tbody>
               <tr>
-                <td>HighestBid</td>
+                <td>lance +alto</td>
                 <td>{parseFloat(cotacaoDolar.highestBid).toFixed(4)}</td>
-                <td>{(cotacaoDolar.highestBid * dolar).toFixed(4)}</td>
+                <td>{this.format(cotacaoDolar.highestBid * dolar)}</td>
                 <td>{this.percentualAplicado(cotacaoDolar.highestBid * dolar, venda).toFixed(4)}</td>
               </tr>
               <tr>
-                <td>Last</td>
+                <td>Ultima</td>
                 <td>{parseFloat(cotacaoDolar.last).toFixed(4)}</td>
-                <td>{(cotacaoDolar.last* dolar).toFixed(4)}</td>
+                <td>{this.format(cotacaoDolar.last* dolar)}</td>
                 <td>{this.percentualAplicado(cotacaoDolar.last* dolar, venda).toFixed(4)}</td>
               </tr>
               <tr>
-                <td>lowestAsk</td>
+                <td>menor venda</td>
                 <td>{parseFloat(cotacaoDolar.lowestAsk).toFixed(4)}</td>
-                <td>{(cotacaoDolar.lowestAsk* dolar).toFixed(4)}</td>
+                <td>{this.format(cotacaoDolar.lowestAsk* dolar)}</td>
                 <td>{this.percentualAplicado(cotacaoDolar.lowestAsk* dolar, venda).toFixed(4)}</td>
               </tr>
             </tbody>
