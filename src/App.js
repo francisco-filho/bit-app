@@ -118,15 +118,16 @@ class App extends Component {
 
     return (
       <div className="App">
-        <header>Retorno</header>
-        <div className="destaque">
-          <div>
-            <span className="simbolo-moeda">R$</span>
-            <span style={{color: this.getColor(pctBat), fontFamily: "Georgia"}}>{lucroBat.toFixed(2)}</span>
-            <span className="pct">({pctBat.toFixed(2)}%)</span></div>
-        </div>
+        <header><span>Retorno</span>
         <div>
           {this.state.atualizacao.toLocaleTimeString()}
+        </div>
+        </header>
+        <div className="destaque">
+          <div style={{color: this.getColor(pctBat)}}>
+            <span className="simbolo-moeda">R$</span>
+            <span>{lucroBat.toFixed(2)}</span>
+            <span className="pct">({pctBat.toFixed(2)}%)</span></div>
         </div>
         <hr/>
         <div className="cotacoes">
