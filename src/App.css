@@ -164,4 +164,8 @@ table td:first-of-type {
   }
 }
 
+.alerta {
+    color: orange;
+}
+
 @import "~font-awesome/css/font-awesome.min.css";

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import {get} from './util/http'
 import 'whatwg-fetch'
+import classNames from "classnames";
 // import {Slider} from "primereact/slider";
 // import 'primereact/resources/themes/nova-light/theme.css';
 // import 'primereact/resources/primereact.min.css';
@@ -35,14 +36,15 @@ class App extends Component {
     venda: 0,
     atualizando: false,
     cotacaoExternaBTC_ETH: 0,
-    pctConversao: getFromStorage('pctConversao', PCT_CONVERSAO)
+    pctConversao: getFromStorage('pctConversao', PCT_CONVERSAO),
+    alertaETH: false
   }
 
   valores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map( v => v * 1000 + 10000)
 
   componentDidMount() {
     this.interval = setInterval(this.atualizarCotacoes, 3000)
-    this.intervalPoly = setInterval(this.atualizarCotacaoExterna, 1000 * 60 * 2)
+    this.intervalPoly = setInterval(this.atualizarCotacaoExterna, 1000 * 60 * 1)
     this.intervalDolar = setInterval(this.atualizarCotacaoDolar, 1000 * 60 * 15)
     this.atualizarCotacaoExterna()
     this.atualizarCotacaoDolar()
@@ -153,6 +155,8 @@ class App extends Component {
       return null
 
     // const venda = negocie.buy ? negocie.buy : this.state.venda
+    const alertaETH = temeth.buy >= parseFloat(parseFloat(cotacaoExternaBTC_ETH.highestBid).toFixed(4));
+    const alertaBTC = (cotacaoDolar.highestBid * dolar * pctConversao) < venda;
 
     return (
       <div className="App">
@@ -167,7 +171,6 @@ class App extends Component {
             <span className="lucro">{this.format(lucroBat)}</span>
             <span className="pct">({this.format(pctBat)}%)</span></div>
         </div>
-        <hr/>
         <div className="cotacoes">
           <header>Investimento</header>
           <div className="cotacao">
@@ -209,7 +212,7 @@ class App extends Component {
             </div>
             <div className="field">
               <label>Venda em BTC</label>
-              <div>{temeth.buy} <span>({cotacaoExternaBTC_ETH.highestBid})</span></div>
+              <div>{temeth.buy} <span className={classNames({'alerta': alertaETH})}>({cotacaoExternaBTC_ETH.highestBid})</span></div>
             </div>
           </div>
         </div>
@@ -224,7 +227,7 @@ class App extends Component {
                   this.setState({pctConversao: PCT_CONVERSAO})
                 }}><i className="fa fa-refresh"/></a>
               </label>
-              <div style={{color: this.percentualAplicado(cotacaoDolar.highestBid * dolar * pctConversao, venda) + 1 > pctConversao ? 'green':'white'}}>
+              <div style={{color: alertaBTC ? 'orange': 'white'}}>
                 <span>{this.format(cotacaoDolar.highestBid * dolar * pctConversao, true)}</span>
               </div>
             </div>
