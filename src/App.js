@@ -98,7 +98,7 @@ class App extends Component {
   getColor = (pct) => {
     const colors = {
       ruim: 'red',
-      normal: '#ffea00',
+      normal: '#ffd70a',
       bom: '#20b020',
       otimo: '#9400a5'
     }
