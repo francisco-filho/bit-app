@@ -214,7 +214,12 @@ class App extends Component {
         <div className="col2">
           <div className="cotacao">
             <div className="field">
-              <label>Venda ({pctConversao}%)</label>
+              <label>Venda ({pctConversao}%)
+                <a onClick={e => {
+                  saveToStorage('pctConversao', PCT_CONVERSAO)
+                  this.setState({pctConversao: PCT_CONVERSAO})
+                }}><i className="fa fa-refresh"/></a>
+              </label>
               <div style={{color: this.percentualAplicado(cotacaoDolar.highestBid * dolar * pctConversao, venda) + 1 > pctConversao ? 'green':'white'}}>
                 <span>{this.format(cotacaoDolar.highestBid * dolar * pctConversao, true)}</span>
               </div>
