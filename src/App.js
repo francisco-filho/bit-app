@@ -106,22 +106,26 @@ class App extends Component {
 
   getColor = (pct) => {
     const colors = {
-      ruim: 'red',
-      normal: '#ffd70a',
-      bom: '#20b020',
-      otimo: '#9400a5'
+      ruim: '#f00',
+      normal: "#ccc",
+      bom: '#ffd70a',
+      otimo: '#20b020',
+      magnifico: '#9400a5',
     }
 
-    if (pct < .3){
+    if (pct < .25){
       return colors.ruim
     } else
-    if (pct < .5){
+    if (pct < .35){
       return colors.normal
     } else
-    if (pct < .7){
+    if (pct < .55){
       return colors.bom
     } else
+    if (pct < .75){
       return colors.otimo
+    } else
+      return colors.magnifico
   }
 
   percentualAplicado = (cotacaoExterna, cotacao) => (cotacao - cotacaoExterna) / cotacaoExterna
