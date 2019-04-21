@@ -95,7 +95,7 @@ header {
 table {
     margin-top: 4px;
     width: 100%;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     border: none;
     border-collapse: collapse;
     font-weight: normal;
@@ -108,7 +108,7 @@ table th {
 }
 
 table th, table td {
-    padding: 4px 4px;
+    padding: 8px 4px;
     border: 1px solid #ccc;
     border-color: rgba(0, 0, 0, .8);
 }

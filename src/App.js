@@ -98,7 +98,7 @@ class App extends Component {
   getColor = (pct) => {
     const colors = {
       ruim: 'red',
-      normal: 'dodgerblue',
+      normal: '#ffea00',
       bom: '#20b020',
       otimo: '#9400a5'
     }
@@ -119,7 +119,7 @@ class App extends Component {
 
   format = (numero, moeda=false) => {
     const style = moeda ? {style: 'currency', currency: 'BRL'} : {}
-    return numero.toLocaleString('pt-BR', {...style, maximumFractionDigits: 2})
+    return numero.toLocaleString('pt-BR', {...style, maximumFractionDigits: 2, minimumFractionDigits: 2})
   }
 
   render() {
