@@ -17,18 +17,25 @@ const PCT_CONVERSAO = 1.0521;
 
 const DOLAR = 3.93
 
+const saveToStorage = (key, value) => localStorage.setItem(key, value)
+const getFromStorage = (key, defaultValue) => {
+  const value = localStorage.getItem(key)
+  return !value && typeof defaultValue != 'undefined' ? defaultValue : value
+}
+
 class App extends Component {
   state = {
     bat: null,
     tembtc: null,
     temeth: null,
     negocie: null,
-    capital: 16000,
+    capital: getFromStorage('capital', 16000),
     atualizacao: new Date(),
     dolar: DOLAR,
     venda: 0,
     atualizando: false,
-    cotacaoExternaBTC_ETH: 0
+    cotacaoExternaBTC_ETH: 0,
+    pctConversao: getFromStorage('pctConversao', PCT_CONVERSAO)
   }
 
   valores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map( v => v * 1000 + 10000)
@@ -88,7 +95,9 @@ class App extends Component {
   }
 
   handleCapitalChange = (e) => {
-    this.setState({capital: e.target.value}, () => {
+    const value = e.target.value
+    this.setState({capital: value}, () => {
+      saveToStorage('capital', value)
       this.atualizarCotacoes()
       this.atualizarCotacaoExterna()
     })
@@ -117,6 +126,13 @@ class App extends Component {
 
   percentualAplicado = (cotacaoExterna, cotacao) => (cotacao - cotacaoExterna) / cotacaoExterna
 
+  updatePctConversao = (cotacao) => {
+    const {dolar, venda} = this.state
+    const value =  parseFloat(1 + this.percentualAplicado(cotacao * dolar, venda)).toFixed(4)
+    saveToStorage('pctConversao', value)
+    this.setState({pctConversao: value})
+  }
+
   format = (numero, moeda=false) => {
     const style = moeda ? {style: 'currency', currency: 'BRL'} : {}
     return numero.toLocaleString('pt-BR', {...style, maximumFractionDigits: 2, minimumFractionDigits: 2})
@@ -125,7 +141,8 @@ class App extends Component {
   render() {
     const {cotacaoDolar, venda, tembtc, temeth, negocie, bat, capital, lucroBat, pctBat,
         dolar,
-        cotacaoExternaBTC_ETH
+        cotacaoExternaBTC_ETH,
+        pctConversao
       } = this.state
 
     if (!tembtc)
@@ -197,9 +214,9 @@ class App extends Component {
         <div className="col2">
           <div className="cotacao">
             <div className="field">
-              <label>Venda ({PCT_CONVERSAO}%)</label>
-              <div style={{color: this.percentualAplicado(cotacaoDolar.highestBid * dolar * PCT_CONVERSAO, venda) + 1 > PCT_CONVERSAO ? 'green':'white'}}>
-                <span>{this.format(cotacaoDolar.highestBid * dolar * PCT_CONVERSAO, true)}</span>
+              <label>Venda ({pctConversao}%)</label>
+              <div style={{color: this.percentualAplicado(cotacaoDolar.highestBid * dolar * pctConversao, venda) + 1 > pctConversao ? 'green':'white'}}>
+                <span>{this.format(cotacaoDolar.highestBid * dolar * pctConversao, true)}</span>
               </div>
             </div>
           </div>
@@ -229,44 +246,27 @@ class App extends Component {
                 <td>lance +alto</td>
                 <td>{parseFloat(cotacaoDolar.highestBid).toFixed(4)}</td>
                 <td>{this.format(cotacaoDolar.highestBid * dolar)}</td>
-                <td>{this.percentualAplicado(cotacaoDolar.highestBid * dolar, venda).toFixed(4)}</td>
+                <td><a onClick={e => this.updatePctConversao(cotacaoDolar.highestBid)}>
+                  {this.percentualAplicado(cotacaoDolar.highestBid * dolar, venda).toFixed(4)}
+                </a></td>
               </tr>
               <tr>
                 <td>Ultima</td>
                 <td>{parseFloat(cotacaoDolar.last).toFixed(4)}</td>
                 <td>{this.format(cotacaoDolar.last* dolar)}</td>
-                <td>{this.percentualAplicado(cotacaoDolar.last* dolar, venda).toFixed(4)}</td>
+                <td><a onClick={e => this.updatePctConversao(cotacaoDolar.last)}>
+                  {this.percentualAplicado(cotacaoDolar.last* dolar, venda).toFixed(4)}</a></td>
               </tr>
               <tr>
                 <td>menor venda</td>
                 <td>{parseFloat(cotacaoDolar.lowestAsk).toFixed(4)}</td>
                 <td>{this.format(cotacaoDolar.lowestAsk* dolar)}</td>
-                <td>{this.percentualAplicado(cotacaoDolar.lowestAsk* dolar, venda).toFixed(4)}</td>
+                <td><a onClick={e => this.updatePctConversao(cotacaoDolar.lowestAsk)}>
+                  {this.percentualAplicado(cotacaoDolar.lowestAsk* dolar, venda).toFixed(4)}</a></td>
               </tr>
             </tbody>
           </table>
         </div>
-        {/*<div className="cotacao">*/}
-          {/*<div className="field">*/}
-            {/*<label>HighestBid</label>*/}
-            {/*<div>{parseFloat(cotacaoDolar.highestBid).toFixed(2)} * ${dolar} => ${(cotacaoDolar.highestBid * dolar).toFixed(4)}*/}
-              {/*=> % {this.percentualAplicado(cotacaoDolar.highestBid * dolar, venda).toFixed(4)}</div>*/}
-          {/*</div>*/}
-        {/*</div>*/}
-        {/*<div className="cotacao">*/}
-          {/*<div className="field">*/}
-            {/*<label>Last</label>*/}
-            {/*<div>{parseFloat(cotacaoDolar.last).toFixed(2)} * ${dolar} => ${(cotacaoDolar.last * dolar).toFixed(4)}*/}
-            {/*=> % {this.percentualAplicado(cotacaoDolar.last * dolar, venda).toFixed(4)}</div>*/}
-          {/*</div>*/}
-        {/*</div>*/}
-        {/*<div className="cotacao">*/}
-          {/*<div className="field">*/}
-            {/*<label>lowestAsk</label>*/}
-            {/*<div>{parseFloat(cotacaoDolar.lowestAsk).toFixed(2)} * ${dolar} => ${(cotacaoDolar.lowestAsk * dolar).toFixed(4)}*/}
-            {/*=> % {this.percentualAplicado(cotacaoDolar.lowestAsk * dolar, venda).toFixed(4)}</div>*/}
-          {/*</div>*/}
-        {/*</div>*/}
       </div>
     );
   }

@@ -101,6 +101,12 @@ table {
     font-weight: normal;
 }
 
+table a {
+    color: #15b;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
 table th {
   font-weight: normal;
     text-align: center;
