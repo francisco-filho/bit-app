@@ -14,7 +14,7 @@ const BAT_URL = "https://broker.batexchange.com.br/api/v3/brleth/ticker"
 const POLONIEX = "https://poloniex.com/public?command=returnTicker"
 const HG_KEY="18837869"
 const MOEDAS_URL = `https://api.hgbrasil.com/finance?format=json-cors&key=${HG_KEY}`
-const PCT_CONVERSAO = 1.0521;
+const PCT_CONVERSAO = 1.05;
 
 const DOLAR = 3.93
 
@@ -155,8 +155,8 @@ class App extends Component {
       return null
 
     // const venda = negocie.buy ? negocie.buy : this.state.venda
-    const alertaETH = temeth.buy >= parseFloat(parseFloat(cotacaoExternaBTC_ETH.highestBid).toFixed(4));
-    const alertaBTC = (cotacaoDolar.highestBid * dolar * pctConversao) < venda;
+    const alertaETH = temeth.buy > parseFloat(parseFloat(cotacaoExternaBTC_ETH.highestBid).toFixed(4));
+    const alertaBTC = (venda - (cotacaoDolar.highestBid * dolar * pctConversao)) > 5;
 
     return (
       <div className="App">
