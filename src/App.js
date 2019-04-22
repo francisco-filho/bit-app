@@ -156,7 +156,8 @@ class App extends Component {
 
     // const venda = negocie.buy ? negocie.buy : this.state.venda
     const alertaETH = temeth.buy > parseFloat(parseFloat(cotacaoExternaBTC_ETH.highestBid).toFixed(4));
-    const alertaBTC = (venda - (cotacaoDolar.highestBid * dolar * pctConversao)) > 5;
+    const alertaBTC = (venda - (cotacaoDolar.highestBid * dolar * pctConversao)) > 15;
+    const sugestao = cotacaoDolar.highestBid * dolar * pctConversao;
 
     return (
       <div className="App">
@@ -229,6 +230,8 @@ class App extends Component {
               </label>
               <div style={{color: alertaBTC ? 'orange': 'white'}}>
                 <span>{this.format(cotacaoDolar.highestBid * dolar * pctConversao, true)}</span>
+                <span className={classNames({diferenca: true, 'green': sugestao >= venda, 'red': sugestao < venda})}>
+                { sugestao >= venda ? '+' : '-'}{this.format(Math.abs(sugestao - venda))}</span>
               </div>
             </div>
           </div>

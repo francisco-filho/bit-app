@@ -89,6 +89,19 @@ header {
   margin-right: 8px;
 }
 
+.diferenca {
+    display: inline-block;
+    margin-left: 4px;
+    font-size: .95rem;
+}
+
+.green {
+    color: green;
+}
+.red {
+    color: red;
+}
+
 .lucro {
   font-weight: bold;
 }
