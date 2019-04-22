@@ -16,7 +16,7 @@ const HG_KEY="18837869"
 const MOEDAS_URL = `https://api.hgbrasil.com/finance?format=json-cors&key=${HG_KEY}`
 const PCT_CONVERSAO = 1.05;
 
-const DOLAR = 3.93
+const DOLAR = 3.9224
 
 const saveToStorage = (key, value) => localStorage.setItem(key, value)
 const getFromStorage = (key, defaultValue) => {
@@ -159,6 +159,8 @@ class App extends Component {
     const alertaBTC = (venda - (cotacaoDolar.highestBid * dolar * pctConversao)) > 15;
     const sugestao = cotacaoDolar.highestBid * dolar * pctConversao;
 
+    //alert(dolar)
+
     return (
       <div className="App">
         <header><span>ROI Aproximado</span>
@@ -239,7 +241,8 @@ class App extends Component {
             <div className="field">
               <label>Dolar</label>
               <div>
-                <span>{this.format(dolar, true)}</span>
+                {/*<span>{this.format(dolar, true)}</span>*/}
+                <span>{dolar}</span>
               </div>
             </div>
           </div>
