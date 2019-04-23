@@ -12,8 +12,9 @@ const TEMETH_URL = "https://broker.tembtc.com.br/api/v3/ethbtc/ticker"
 const NEGOCIE_URL = "https://broker.negociecoins.com.br/api/v3/btcbrl/ticker"
 const BAT_URL = "https://broker.batexchange.com.br/api/v3/brleth/ticker"
 const POLONIEX = "https://poloniex.com/public?command=returnTicker"
-const HG_KEY="18837869"
-const MOEDAS_URL = `https://api.hgbrasil.com/finance?format=json-cors&key=${HG_KEY}`
+// const HG_KEY="18837869"
+// const MOEDAS_URL = `https://api.hgbrasil.com/finance?format=json-cors&key=${HG_KEY}`
+const MOEDAS_URL="http://68.183.139.142:3001/api/cotacoes";
 const PCT_CONVERSAO = 1.05;
 
 const DOLAR = 3.9224
@@ -45,7 +46,7 @@ class App extends Component {
   componentDidMount() {
     this.interval = setInterval(this.atualizarCotacoes, 3000)
     this.intervalPoly = setInterval(this.atualizarCotacaoExterna, 1000 * 60 * 1)
-    this.intervalDolar = setInterval(this.atualizarCotacaoDolar, 1000 * 60 * 15)
+    this.intervalDolar = setInterval(this.atualizarCotacaoDolar, 1000 * 60 * 2)
     this.atualizarCotacaoExterna()
     this.atualizarCotacaoDolar()
   }

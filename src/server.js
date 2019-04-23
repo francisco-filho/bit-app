@@ -5,6 +5,7 @@ const https = require('https');
 
 const HG_KEY="18837869"
 const MOEDAS_URL = `https://api.hgbrasil.com/finance?format=json-cors&key=${HG_KEY}`
+//const MOEDAS_URL="http://68.183.139.142:3001/api/cotacoes";
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(pino);
@@ -16,6 +17,7 @@ queryApi()
 
 app.get('/api/cotacoes', (req, res) => {
   res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Access-Control-Allow-Origin', '*')
   res.send(cotacoes);
 });
 
