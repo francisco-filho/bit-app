@@ -1,0 +1,12 @@
+[Unit]
+Description=Cotações de diversas moedas
+
+[Service]
+ExecStart=node src/server.js
+WorkingDirectory=/home/francisco/Desenvolvimento/bit-app
+LimitNOFILE=4096
+IgnoreSIGPIPE=false
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target
