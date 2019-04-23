@@ -61,7 +61,7 @@ class App extends Component {
     get(MOEDAS_URL).then(resp => {
       const dolar = resp.results.currencies.USD.buy
       this.setState({dolar})
-    })
+    }).catch(error => this.setState({dolar: DOLAR}))
   }
 
   atualizarCotacaoExterna = () => {
