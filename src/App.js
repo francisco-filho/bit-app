@@ -231,10 +231,6 @@ class App extends Component {
           <header>BTC</header>
           <div className="cotacao">
             <div className="field">
-              <label>Compra</label>
-              <div>{this.format(tembtc.sell)}</div>
-            </div>
-            <div className="field">
               <label>Venda</label>
               <div>
                 {negocie.buy ?
@@ -244,18 +240,22 @@ class App extends Component {
                 </div>
             </div>
             <div className="field">
-              <label>Diferença</label>
-              <div>{this.format(venda - tembtc.sell)}</div>
-            </div>
-          </div>
-          <div className="cotacao">
-            <div className="field">
               <label>Qtd.Ordens</label>
               <div>{quantidade}</div>
             </div>
             <div className="field">
               <label>Volume</label>
               <div>{this.format(volume)}</div>
+            </div>
+          </div>
+          <div className="cotacao">
+            <div className="field">
+              <label>Compra</label>
+              <div>{this.format(tembtc.sell)}</div>
+            </div>
+            <div className="field">
+              <label>Diferença</label>
+              <div>{this.format(venda - tembtc.sell)}</div>
             </div>
           </div>
           <header>ETH</header>
