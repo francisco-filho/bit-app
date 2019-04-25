@@ -41,7 +41,7 @@ class App extends Component {
     alertaETH: false
   }
 
-  valores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map( v => v * 1000 + 10000)
+  valores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map( v => v * 1000 + 10000)
 
   componentDidMount() {
     this.interval = setInterval(this.atualizarCotacoes, 3000)
@@ -88,9 +88,9 @@ class App extends Component {
 
       let vlrCompra = capital / result.bat.sell
       let vlrVendaBtc  = vlrCompra * result.temeth.buy
-      let venda = result.negocie.buy ? parseInt(result.negocie.buy) : this.state.venda
+      let venda = result.negocie.buy ? parseFloat(result.negocie.buy) : this.state.venda
       let vlrVenda = vlrVendaBtc * venda
-      const taxas = (vlrVenda * 0.020) + 5
+      const taxas = (vlrVenda * 0.01975) + 8
       const lucroBat = (vlrVenda - capital) - taxas
       const pctBat = (lucroBat / capital) * 100
       this.setState({...result, lucroBat, pctBat, atualizacao: new Date(), venda, atualizando: false})
@@ -156,9 +156,12 @@ class App extends Component {
       return null
 
     // const venda = negocie.buy ? negocie.buy : this.state.venda
-    const alertaETH = temeth.buy > parseFloat(parseFloat(cotacaoExternaBTC_ETH.highestBid).toFixed(4));
+    //const alertaETH = temeth.buy > parseFloat(parseFloat(cotacaoExternaBTC_ETH.highestBid).toFixed(4));
+    const alertaETH = temeth.buy >= parseFloat((""+cotacaoExternaBTC_ETH.highestBid).substr(0, 6))
     const alertaBTC = (venda - (cotacaoDolar.highestBid * dolar * pctConversao)) > 15;
     const sugestao = cotacaoDolar.highestBid * dolar * pctConversao;
+
+    // console.log('eth', temeth.buy, parseFloat(rnaBTC_ETH.highestBid).toFixed(4)))
 
     //alert(dolar)
 
@@ -174,6 +177,9 @@ class App extends Component {
             <span className="simbolo-moeda">R$</span>
             <span className="lucro">{this.format(lucroBat)}</span>
             <span className="pct">({this.format(pctBat)}%)</span></div>
+        </div>
+        <div className="col2">
+
         </div>
         <div className="cotacoes">
           <header>Investimento</header>
