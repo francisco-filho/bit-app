@@ -52,12 +52,15 @@ class App extends Component {
     this.intervalDolar = setInterval(this.atualizarCotacaoDolar, 1000 * 60 * 2)
     this.atualizarCotacaoExterna()
     this.atualizarCotacaoDolar()
+    this.atualizarLivro()
+    this.intervalLivro = setInterval(this.atualizarLivro, 1000 * 4)
   }
 
   componentWillUnmount() {
     clearInterval(this.interval)
     clearInterval(this.intervalPoly)
     clearInterval(this.intervalDolar)
+    clearInterval(this.intervalLivro)
   }
 
   atualizarCotacaoDolar = () => {
@@ -73,6 +76,20 @@ class App extends Component {
       })
   }
 
+  atualizarLivro = () => {
+    const {negocie} = this.state
+    console.log('atualizando livro')
+
+    get(NEGOCIE_LIVRO_URL).then(resp => {
+      if (!negocie) return
+      const livro = this.volumeLivroNegocie(resp, negocie.buy)
+        this.setState({
+          volume: livro.volume,
+          quantidade: livro.quantidade
+        })
+    })
+  }
+
   atualizarCotacoes = () => {
     const {capital} = this.state
     this.setState({atualizando: true})
@@ -81,14 +98,12 @@ class App extends Component {
       get(TEMETH_URL).then(resp => resp),
       get(NEGOCIE_URL).then(resp => resp).catch(err => 0),
       get(BAT_URL).then(resp => resp),
-      get(NEGOCIE_LIVRO_URL).then(resp => resp)
     ]).then(resp => {
       const result = {
         tembtc: resp[0],
         temeth: resp[1],
         negocie: resp[2],
         bat: resp[3],
-        livroNegocie: resp[4]
       }
 
       let vlrCompra = capital / result.bat.sell
@@ -98,16 +113,22 @@ class App extends Component {
       const taxas = (vlrVenda * 0.01975) + 8
       const lucroBat = (vlrVenda - capital) - taxas
       const pctBat = (lucroBat / capital) * 100
-      this.setState({...result, lucroBat, pctBat, atualizacao: new Date(), venda, atualizando: false})
-      this.volumeLivroNegocie(resp[4], result.negocie.buy)
+      this.setState({...result, lucroBat, pctBat, atualizacao: new Date(),
+        venda,
+        atualizando: false})
     })
   }
 
   volumeLivroNegocie = (livro, valor) => {
     if (livro && livro.bid) {
-      let livroValorMaximo = livro.bid.filter( l => l.price === valor)
-      let volume = livroValorMaximo.reduce((o, n) => o + n.price, 0)
-      this.setState({volume, quantidade: livroValorMaximo.length})
+      let livroValorMaximo = livro.bid.splice(0, 50).filter( l => l.price === valor)
+      let volume = livroValorMaximo.reduce((o, n) => o + n.quantity, 0)
+      return {
+        volume,
+        quantidade: livroValorMaximo.length
+      }
+    } else {
+      return { volume: 0, quantidade: 0}
     }
   }
 
