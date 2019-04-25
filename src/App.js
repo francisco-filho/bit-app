@@ -10,6 +10,7 @@ import classNames from "classnames";
 const TEMBTC_URL = "https://broker.tembtc.com.br/api/v3/btcbrl/ticker"
 const TEMETH_URL = "https://broker.tembtc.com.br/api/v3/ethbtc/ticker"
 const NEGOCIE_URL = "https://broker.negociecoins.com.br/api/v3/btcbrl/ticker"
+const NEGOCIE_LIVRO_URL = "https://broker.negociecoins.com.br/api/v3/btcbrl/orderbook"
 const BAT_URL = "https://broker.batexchange.com.br/api/v3/brleth/ticker"
 const POLONIEX = "https://poloniex.com/public?command=returnTicker"
 // const HG_KEY="18837869"
@@ -38,7 +39,9 @@ class App extends Component {
     atualizando: false,
     cotacaoExternaBTC_ETH: 0,
     pctConversao: getFromStorage('pctConversao', PCT_CONVERSAO),
-    alertaETH: false
+    alertaETH: false,
+    volume: 0,
+    quantidade: 0
   }
 
   valores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map( v => v * 1000 + 10000)
@@ -78,12 +81,14 @@ class App extends Component {
       get(TEMETH_URL).then(resp => resp),
       get(NEGOCIE_URL).then(resp => resp).catch(err => 0),
       get(BAT_URL).then(resp => resp),
+      get(NEGOCIE_LIVRO_URL).then(resp => resp)
     ]).then(resp => {
       const result = {
         tembtc: resp[0],
         temeth: resp[1],
         negocie: resp[2],
-        bat: resp[3]
+        bat: resp[3],
+        livroNegocie: resp[4]
       }
 
       let vlrCompra = capital / result.bat.sell
@@ -94,7 +99,16 @@ class App extends Component {
       const lucroBat = (vlrVenda - capital) - taxas
       const pctBat = (lucroBat / capital) * 100
       this.setState({...result, lucroBat, pctBat, atualizacao: new Date(), venda, atualizando: false})
+      this.volumeLivroNegocie(resp[4], result.negocie.buy)
     })
+  }
+
+  volumeLivroNegocie = (livro, valor) => {
+    if (livro && livro.bid) {
+      let livroValorMaximo = livro.bid.filter( l => l.price === valor)
+      let volume = livroValorMaximo.reduce((o, n) => o + n.price, 0)
+      this.setState({volume, quantidade: livroValorMaximo.length})
+    }
   }
 
   handleCapitalChange = (e) => {
@@ -149,7 +163,9 @@ class App extends Component {
     const {cotacaoDolar, venda, tembtc, temeth, negocie, bat, capital, lucroBat, pctBat,
         dolar,
         cotacaoExternaBTC_ETH,
-        pctConversao
+        pctConversao,
+        volume,
+      quantidade
       } = this.state
 
     if (!tembtc)
@@ -177,9 +193,6 @@ class App extends Component {
             <span className="simbolo-moeda">R$</span>
             <span className="lucro">{this.format(lucroBat)}</span>
             <span className="pct">({this.format(pctBat)}%)</span></div>
-        </div>
-        <div className="col2">
-
         </div>
         <div className="cotacoes">
           <header>Investimento</header>
@@ -212,6 +225,16 @@ class App extends Component {
             <div className="field">
               <label>Diferença</label>
               <div>{this.format(venda - tembtc.sell)}</div>
+            </div>
+          </div>
+          <div className="cotacao">
+            <div className="field">
+              <label>Qtd.Ordens</label>
+              <div>{quantidade}</div>
+            </div>
+            <div className="field">
+              <label>Volume</label>
+              <div>{this.format(volume)}</div>
             </div>
           </div>
           <header>ETH</header>
