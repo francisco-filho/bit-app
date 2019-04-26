@@ -178,6 +178,19 @@ table td:first-of-type {
   }
 }
 
+.mensagem.erro {
+    display: flex;
+    align-items: center;
+    background-color: #ffea00;
+    color: black;
+    padding: 4px;
+    margin-bottom: 4px;
+    font-size: .8rem;
+}
+.erro i{
+    margin-right: 4px;
+}
+
 .alerta {
     color: orange;
 }

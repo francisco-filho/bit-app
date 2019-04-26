@@ -3,9 +3,6 @@ import './App.css';
 import {get} from './util/http'
 import 'whatwg-fetch'
 import classNames from "classnames";
-// import {Slider} from "primereact/slider";
-// import 'primereact/resources/themes/nova-light/theme.css';
-// import 'primereact/resources/primereact.min.css';
 
 const TEMBTC_URL = "https://broker.tembtc.com.br/api/v3/btcbrl/ticker"
 const TEMETH_URL = "https://broker.tembtc.com.br/api/v3/ethbtc/ticker"
@@ -13,8 +10,6 @@ const NEGOCIE_URL = "https://broker.negociecoins.com.br/api/v3/btcbrl/ticker"
 const NEGOCIE_LIVRO_URL = "https://broker.negociecoins.com.br/api/v3/btcbrl/orderbook"
 const BAT_URL = "https://broker.batexchange.com.br/api/v3/brleth/ticker"
 const POLONIEX = "https://poloniex.com/public?command=returnTicker"
-// const HG_KEY="18837869"
-// const MOEDAS_URL = `https://api.hgbrasil.com/finance?format=json-cors&key=${HG_KEY}`
 const MOEDAS_URL="http://68.183.139.142:3001/api/cotacoes";
 const PCT_CONVERSAO = 1.05;
 
@@ -28,32 +23,37 @@ const getFromStorage = (key, defaultValue) => {
 
 class App extends Component {
   state = {
-    bat: null,
-    tembtc: null,
-    temeth: null,
-    negocie: null,
+    bat: {sell: 0 , buy: 0},
+    tembtc: {sell: 0 , buy: 0},
+    temeth: {sell: 0 , buy: 0},
+    negocie: {sell: 0 , buy: 0},
     capital: getFromStorage('capital', 16000),
     atualizacao: new Date(),
     dolar: DOLAR,
     venda: 0,
+    vendaBtc: 0,
     atualizando: false,
     cotacaoExternaBTC_ETH: 0,
+    cotacaoDolar: 0,
     pctConversao: getFromStorage('pctConversao', PCT_CONVERSAO),
     alertaETH: false,
     volume: 0,
-    quantidade: 0
+    quantidade: 0,
+    erroTembtc: false,
+    erroTemeth: false,
+    erroNegocie: false
   }
 
-  valores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map( v => v * 1000 + 10000)
+  valores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19].map( v => v * 1000 + 10000)
 
   componentDidMount() {
     this.interval = setInterval(this.atualizarCotacoes, 3000)
     this.intervalPoly = setInterval(this.atualizarCotacaoExterna, 1000 * 60 * 1)
     this.intervalDolar = setInterval(this.atualizarCotacaoDolar, 1000 * 60 * 2)
-    this.atualizarCotacaoExterna()
+    this.intervalLivro = setInterval(this.atualizarLivro, 1000 * 4)
     this.atualizarCotacaoDolar()
     this.atualizarLivro()
-    this.intervalLivro = setInterval(this.atualizarLivro, 1000 * 4)
+    setTimeout(this.atualizarCotacaoExterna, 2000)
   }
 
   componentWillUnmount() {
@@ -72,13 +72,13 @@ class App extends Component {
 
   atualizarCotacaoExterna = () => {
       get(POLONIEX).then(resp => resp).then(resp => {
-        this.setState({ cotacaoDolar: resp.USDC_BTC, cotacaoExternaBTC_ETH: resp.BTC_ETH })
+        if (resp)
+          this.setState({ cotacaoDolar: resp.USDC_BTC, cotacaoExternaBTC_ETH: resp.BTC_ETH})
       })
   }
 
   atualizarLivro = () => {
     const {negocie} = this.state
-    console.log('atualizando livro')
 
     get(NEGOCIE_LIVRO_URL).then(resp => {
       if (!negocie) return
@@ -91,12 +91,12 @@ class App extends Component {
   }
 
   atualizarCotacoes = () => {
-    const {capital} = this.state
+    const {capital, venda, vendaBtc} = this.state
     this.setState({atualizando: true})
     Promise.all([
-      get(TEMBTC_URL).then(resp => resp),
-      get(TEMETH_URL).then(resp => resp),
-      get(NEGOCIE_URL).then(resp => resp).catch(err => 0),
+      get(TEMBTC_URL).then(resp => resp).catch(e => null),
+      get(TEMETH_URL).then(resp =>  resp).catch(e => null),
+      get(NEGOCIE_URL).then(resp => resp).catch(err => null),
       get(BAT_URL).then(resp => resp),
     ]).then(resp => {
       const result = {
@@ -106,15 +106,20 @@ class App extends Component {
         bat: resp[3],
       }
 
+      let vendaBtc = result.temeth.buy ? result.temeth.buy : vendaBtc
+      let venda = result.negocie.buy ? parseFloat(result.negocie.buy) : venda
+
       let vlrCompra = capital / result.bat.sell
-      let vlrVendaBtc  = vlrCompra * result.temeth.buy
-      let venda = result.negocie.buy ? parseFloat(result.negocie.buy) : this.state.venda
+      let vlrVendaBtc  = vlrCompra * vendaBtc
       let vlrVenda = vlrVendaBtc * venda
       const taxas = (vlrVenda * 0.01975) + 8
       const lucroBat = (vlrVenda - capital) - taxas
       const pctBat = (lucroBat / capital) * 100
       this.setState({...result, lucroBat, pctBat, atualizacao: new Date(),
         venda,
+        vendaBtc,
+        erroTemeth: !!resp[1],
+        erroNegocie: !!resp[2],
         atualizando: false})
     })
   }
@@ -140,7 +145,9 @@ class App extends Component {
       this.atualizarCotacaoExterna()
     })
   }
-  handleVendaChange = (e) => this.setState({venda: e.target.value})
+  handleVendaChange = (e) => this.setState({venda: parseInt(e.target.value)})
+
+  handleVendaBtcChange = (e) => this.setState({vendaBtc: e.target.value})
 
   getColor = (pct) => {
     const colors = {
@@ -151,16 +158,16 @@ class App extends Component {
       magnifico: '#9400a5',
     }
 
-    if (pct < .25){
+    if (pct < .05){
       return colors.ruim
     } else
-    if (pct < .35){
+    if (pct < .30){
       return colors.normal
     } else
-    if (pct < .55){
+    if (pct < .50){
       return colors.bom
     } else
-    if (pct < .75){
+    if (pct < .70){
       return colors.otimo
     } else
       return colors.magnifico
@@ -176,34 +183,45 @@ class App extends Component {
   }
 
   format = (numero, moeda=false) => {
+    if (typeof numero === 'undefined')
+      return null;
     const style = moeda ? {style: 'currency', currency: 'BRL'} : {}
     return numero.toLocaleString('pt-BR', {...style, maximumFractionDigits: 2, minimumFractionDigits: 2})
   }
 
   render() {
-    const {cotacaoDolar, venda, tembtc, temeth, negocie, bat, capital, lucroBat, pctBat,
+    const {cotacaoDolar,
+        venda,
+        tembtc,
+        temeth,
+        negocie,
+        bat,
+        capital,
+        lucroBat,
+        pctBat,
         dolar,
         cotacaoExternaBTC_ETH,
         pctConversao,
         volume,
-      quantidade
+        vendaBtc,
+        quantidade,
+        erroNegocie,
+        erroTemeth
       } = this.state
 
-    if (!tembtc)
+    if (!temeth.buy && !negocie.buy && !cotacaoExternaBTC_ETH)
       return null
 
-    // const venda = negocie.buy ? negocie.buy : this.state.venda
-    //const alertaETH = temeth.buy > parseFloat(parseFloat(cotacaoExternaBTC_ETH.highestBid).toFixed(4));
     const alertaETH = temeth.buy >= parseFloat((""+cotacaoExternaBTC_ETH.highestBid).substr(0, 6))
     const alertaBTC = (venda - (cotacaoDolar.highestBid * dolar * pctConversao)) > 15;
     const sugestao = cotacaoDolar.highestBid * dolar * pctConversao;
 
-    // console.log('eth', temeth.buy, parseFloat(rnaBTC_ETH.highestBid).toFixed(4)))
-
-    //alert(dolar)
-
     return (
       <div className="App">
+        <div className="mensagens">
+          { erroTemeth && <MensagemErro mensagem="API TEMBTC / ETH com problemas"/>}
+          { erroNegocie && <MensagemErro mensagem="API NEGOCIE com problemas"/>}
+        </div>
         <header><span>ROI Aproximado</span>
         <div>
           {this.state.atualizacao.toLocaleTimeString()}
@@ -219,8 +237,6 @@ class App extends Component {
           <header>Investimento</header>
           <div className="cotacao">
             <div className="field">
-              {/*<Slider min={5000} max={20000} step={1000} value={capital} onChange={this.handleCapitalChange}/>*/}
-              {/*<span>{this.format(capital, true)}</span>*/}
               <select type="number" onChange={this.handleCapitalChange} value={capital} defaultValue={venda}>
                 {
                   this.valores.map(v => <option value={v}>{this.format(v, true)}</option>)
@@ -233,9 +249,9 @@ class App extends Component {
             <div className="field">
               <label>Venda</label>
               <div>
-                {negocie.buy ?
-                  <span>{this.format(venda)}</span> :
-                  <input type="number" value={venda} onChange={this.handleVendaChange}/>
+                {erroNegocie ?
+                  <input type="number" value={venda} onChange={this.handleVendaChange}/> :
+                  <span>{this.format(venda)}</span>
                 }
                 </div>
             </div>
@@ -244,7 +260,7 @@ class App extends Component {
               <div>{quantidade}</div>
             </div>
             <div className="field">
-              <label>Volume</label>
+              <label>Volume Total</label>
               <div>{this.format(volume)}</div>
             </div>
           </div>
@@ -266,7 +282,11 @@ class App extends Component {
             </div>
             <div className="field">
               <label>Venda em BTC</label>
-              <div>{temeth.buy} <span className={classNames({'alerta': alertaETH})}>({cotacaoExternaBTC_ETH.highestBid})</span></div>
+              {
+                 erroTemeth ?
+                   <input type="number" step="0,0001" value={vendaBtc} onChange={this.handleVendaBtcChange}/> :
+                   <div>{temeth.buy} <span className={classNames({'alerta': alertaETH})}>({cotacaoExternaBTC_ETH.highestBid})</span></div>
+              }
             </div>
           </div>
         </div>
@@ -292,7 +312,6 @@ class App extends Component {
             <div className="field">
               <label>Dolar</label>
               <div>
-                {/*<span>{this.format(dolar, true)}</span>*/}
                 <span>{dolar}</span>
               </div>
             </div>
@@ -340,5 +359,10 @@ class App extends Component {
     );
   }
 }
+
+const MensagemErro = ({mensagem}) => <div className="mensagem erro">
+  <i className="fa fa-bug"/><span>{mensagem}</span>
+</div>
+
 
 export default App;
