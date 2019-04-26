@@ -39,6 +39,8 @@ class App extends Component {
     alertaETH: false,
     volume: 0,
     quantidade: 0,
+    volumeCompra: 0,
+    quantidadeCompra: 0,
     erroTembtc: false,
     erroTemeth: false,
     erroNegocie: false
@@ -85,7 +87,9 @@ class App extends Component {
       const livro = this.volumeLivroNegocie(resp, negocie.buy)
         this.setState({
           volume: livro.volume,
-          quantidade: livro.quantidade
+          quantidade: livro.quantidade,
+          volumeCompra: livro.volumeCompra,
+          quantidadeCompra: livro.quantidadeCompra
         })
     })
   }
@@ -125,16 +129,25 @@ class App extends Component {
   }
 
   volumeLivroNegocie = (livro, valor) => {
+    let result = {
+      volume: 0,
+      quantidade: 0,
+      volumeCompra: 0,
+      quantidadeCompra: 0
+    }
     if (livro && livro.bid) {
       let livroValorMaximo = livro.bid.splice(0, 50).filter( l => l.price === valor)
       let volume = livroValorMaximo.reduce((o, n) => o + n.quantity, 0)
-      return {
-        volume,
-        quantidade: livroValorMaximo.length
-      }
-    } else {
-      return { volume: 0, quantidade: 0}
+      result.volume = volume
+      result.quantidade = livroValorMaximo.length
     }
+    if (livro && livro.ask) {
+      let livroCompra = livro.ask.splice(0, 100).filter( l => l.price <= valor)
+      let volumeCompra = livroCompra.reduce((o, n) => o + n.quantity, 0)
+      result.volumeCompra = volumeCompra
+      result.quantidadeCompra = livroCompra.length
+    }
+    return result
   }
 
   handleCapitalChange = (e) => {
@@ -206,7 +219,9 @@ class App extends Component {
         vendaBtc,
         quantidade,
         erroNegocie,
-        erroTemeth
+        erroTemeth,
+      volumeCompra
+
       } = this.state
 
     if (!temeth.buy && !negocie.buy && !cotacaoExternaBTC_ETH)
@@ -260,7 +275,7 @@ class App extends Component {
               <div>{quantidade}</div>
             </div>
             <div className="field">
-              <label>Volume Total</label>
+              <label>Vol. Total Venda</label>
               <div>{this.format(volume)}</div>
             </div>
           </div>
@@ -272,6 +287,10 @@ class App extends Component {
             <div className="field">
               <label>Diferença</label>
               <div>{this.format(venda - tembtc.sell)}</div>
+            </div>
+            <div className="field">
+              <label>Vol. Total Compra</label>
+              <div>{this.format(volumeCompra)}</div>
             </div>
           </div>
           <header>ETH</header>
