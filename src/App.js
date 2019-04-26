@@ -118,8 +118,8 @@ class App extends Component {
       this.setState({...result, lucroBat, pctBat, atualizacao: new Date(),
         venda,
         vendaBtc,
-        erroTemeth: !!resp[1],
-        erroNegocie: !!resp[2],
+        erroTemeth: !(!!resp[1]),
+        erroNegocie: !(!!resp[2]),
         atualizando: false})
     })
   }
