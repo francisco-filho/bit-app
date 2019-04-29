@@ -31,9 +31,8 @@ const util = require('util');
 
   const pages = await browser.pages();
   page = pages[0]
-  page.setViewport({width: 1280, height: 800})
-  //await page.goto('https://broker.negociecoins.com.br/usuario/privado/retirada');
-  await page.goto('https://broker.tembtc.com.br/usuario/privado/retirada');
+  await page.setViewport({width: 1280, height: 800})
+  await batIrParaSecaoRetiradaEthereum(page)
   await sleep(3000)
 
   // seção da TEMBTC
@@ -45,7 +44,6 @@ const util = require('util');
 
   // espera até valor da retirada ser != "0,00"
   esperarValorDaRetiradaSerPreenchido(page)
-
 
   // seleciona transferência para Bat
   await sleep(2000)
@@ -68,16 +66,41 @@ const util = require('util');
   //TODO: se der erro dá alert alert-danger
 
   await informarPIN(page)
+  //TODO
+  //const token = calcularToken()
+  //await informarToken(page, token)
 
   await page.disconnect()
 
 // DIV de erro apos transf: div.alert.alert-danger
 //  .retirada-panel .alert.alert-success
+  //ctl00_ContentPlaceHolder1_TextBoxToken
 })();
+
+const tembtcIrParaRetirada = async (page) => {
+  await page.goto('https://broker.tembtc.com.br/usuario/privado/retirada', {waitUntil: 'networkidle2'});
+}
+
+const negocieIrParaRetirada = async (page) => {
+  await page.goto('https://broker.negociecoins.com.br/usuario/privado/retirada', {waitUntil: 'networkidle2'});
+}
+
+const batIrParaRetirada = async (page) => {
+  await page.goto('https://broker.batexchange.com.br/usuario/privado/retirada', {waitUntil: 'networkidle2'});
+}
 
 const tembtcIrParaSecaoRetiradaBitcoin = async (page) => {
   const btnBitcoin = await page.waitForSelector('#ctl00_ContentPlaceHolder1_RepeaterMoedas_ctl01_ButtonMoeda');
   await btnBitcoin.click()
+  await page.waitForNavigation({ waitUntil: 'networkidle' })
+}
+
+const batIrParaSecaoRetiradaEthereum = async (page) => {
+  const btnBitcoin = await page.waitForSelector('#ctl00_ContentPlaceHolder1_RepeaterMoedas_ctl02_ButtonMoeda');
+  await Promise.all([
+    btnBitcoin.click(),
+    page.waitForNavigation({ waitUntil: 'networkidle' })
+  ])
 }
 
 const esperarValorDaRetiradaSerPreenchido = async (page) => {
@@ -89,13 +112,27 @@ const esperarValorDaRetiradaSerPreenchido = async (page) => {
 const solicitar = async (page) => {
   await sleep(2000)
   await page.evaluate(() => $('#aEnviar').click());
+/*  await Promise.all([
+    page.click('.load_more a'),
+    page.waitForNavigation({ waitUntil: 'networkidle' })
+  ]);*/
 }
 
-const informarPIN = async (page) => {
+const informarPIN = async (page, somentePIN = false) => {
   await page.waitForSelector('#divRetirada #ctl00_ContentPlaceHolder1_TextBoxPIN');
   await sleep(2000)
   await page.focus('#ctl00_ContentPlaceHolder1_TextBoxPIN')
-  await page.type('#divRetirada #ctl00_ContentPlaceHolder1_TextBoxPIN', '8564', {delay: 200})
+  await page.type('#divRetirada #ctl00_ContentPlaceHolder1_TextBoxPIN', '8564', {delay: 150})
+  if (somentePIN)
+    await page.evaluate(() => $('#divRetirada input[name="ctl00$ContentPlaceHolder1$Continuar"]').click())
+}
+
+// TODO: calcular valor do token automaticamente
+const informarToken = async (page, token) => {
+  await page.waitForSelector('#divRetirada #ctl00_ContentPlaceHolder1_TextBoxToken');
+  await sleep(2000)
+  await page.focus('#ctl00_ContentPlaceHolder1_TextBoxToken')
+  await page.type('#divRetirada #ctl00_ContentPlaceHolder1_TextBoxToken', token, {delay: 150})
   await page.evaluate(() => $('#divRetirada input[name="ctl00$ContentPlaceHolder1$Continuar"]').click())
 }
 
@@ -113,7 +150,6 @@ const esperarModalEFechaLa = async (page, timeout) => {
     return true
   }
 }
-
 
 function timeout(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
