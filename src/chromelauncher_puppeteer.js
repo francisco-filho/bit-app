@@ -1,22 +1,4 @@
 /**
- * Copyright 2018 Google Inc. All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * @author ebidel@ (Eric Bidelman)
- */
-
-/**
  * How to:
  * 1. Use chrome-launcher module to launch chrome
  * 2. Connect to that browser instance using Puppeteer.
@@ -32,60 +14,105 @@ const util = require('util');
 
 (async() => {
 
-const URL = 'https://www.chromestatus.com/features';
+  const opts = {
+    // chromeFlags: ['--headless'],
+    chromeFlags: [],
+    logLevel: 'info',
+    output: 'json'
+  };
 
-const opts = {
-  // chromeFlags: ['--headless'],
-  chromeFlags: [],
-  logLevel: 'info',
-  output: 'json'
-};
+  //Launch chrome using chrome-launcher.
+  //const chrome = await chromeLauncher.launch(opts);
+  //opts.port = chrome.port;
 
-// Launch chrome using chrome-launcher.
-//const chrome = await chromeLauncher.launch(opts);
-//opts.port = chrome.port;
+  const resp = await util.promisify(request)(`http://localhost:9222/json/version`);
+  const {webSocketDebuggerUrl} = JSON.parse(resp.body);
+  const browser = await puppeteer.connect({browserWSEndpoint: webSocketDebuggerUrl});
 
-// Connect to it using puppeteer.connect().
-const resp = await util.promisify(request)(`http://localhost:9222/json/version`);
-const {webSocketDebuggerUrl} = JSON.parse(resp.body);
-const browser = await puppeteer.connect({browserWSEndpoint: webSocketDebuggerUrl});
+  const pages = await browser.pages();
+  page = pages[0]
+  page.setViewport({width: 1280, height: 800})
+  //await page.goto('https://broker.negociecoins.com.br/usuario/privado/retirada');
+  await page.goto('https://broker.tembtc.com.br/usuario/privado/retirada');
+  await sleep(3000)
 
-const pages = await browser.pages();
-page = pages[0]
-page.setViewport({width: 1024, height: 800})
-await page.goto('https://broker.negociecoins.com.br/usuario/privado/retirada');
-//const valor = await page.$('#')
-await sleep(3000)
-const awaitValueQuery = 'document.getElementById("ctl00_ContentPlaceHolder1_LiteralLimiteDisponivel").innerHTML'
-await page.waitForFunction(awaitValueQuery +' == "0,00"');
-await page.waitForSelector('#ctl00_ContentPlaceHolder1_TextBoxValorRetirada');
+  // seção da TEMBTC
+  // tembtcIrParaSecaoRetiradaBitcoin(page)
 
-await sleep(2000)
-// checar se modal apareceu
+  // checar se modal apareceu
+  await sleep(3000)
+  await esperarModalEFechaLa(page, 2000)
 
-await page.select("select[name='ctl00$ContentPlaceHolder1$DropDownListUsuarios_ContaBancaria']", '103223')
+  // espera até valor da retirada ser != "0,00"
+  esperarValorDaRetiradaSerPreenchido(page)
 
-await sleep(2000)
 
-await page.evaluate(() => {
-  const el = document.querySelector("#ctl00_ContentPlaceHolder1_limitesUsuario a")
-  el.parentElement.click();
-  const saldo = document.querySelector('#ctl00_ContentPlaceHolder1_LiteralLimiteDisponivel').innerHTML
-  console.log('end');
-  UseBalanceParaRetirada(saldo);
-  $("#ctl00_ContentPlaceHolder1_TextBoxValorRetirada").val(saldo);
-  CalculaComissao();
-});
-await sleep(2000)
-// se der erro dá alert alert-danger
-await page.evaluate(() => $('#aEnviar').click());
+  // seleciona transferência para Bat
+  await sleep(2000)
+  await page.select("select[name='ctl00$ContentPlaceHolder1$DropDownListUsuarios_ContaBancaria']", '103223')
 
-/*await page.waitForSelector('.recaptcha-checkbox-checkmar')
-await page.click("#ctl00_liLivroOfertas > a")*/
-//await page.goto('https://broker.batexchange.com.br/usuario/privado/dashboard');
-// Run Lighthouse.
+  // executa função para calculo da comissão e valor liquido
+  await sleep(5000)
+  await page.evaluate(() => {
+    const el = document.querySelector("#ctl00_ContentPlaceHolder1_limitesUsuario a")
+    el.parentElement.click();
+    const saldo = document.querySelector('#ctl00_ContentPlaceHolder1_LiteralLimiteDisponivel').innerHTML
+    // UseBalanceParaRetirada(saldo);
+    $("#ctl00_ContentPlaceHolder1_TextBoxValorRetirada").val(saldo);
+    CalculaComissao();
+  });
 
+  // Solicita retirada
+  await solicitar(page)
+
+  //TODO: se der erro dá alert alert-danger
+
+  await informarPIN(page)
+
+  await page.disconnect()
+
+// DIV de erro apos transf: div.alert.alert-danger
+//  .retirada-panel .alert.alert-success
 })();
+
+const tembtcIrParaSecaoRetiradaBitcoin = async (page) => {
+  const btnBitcoin = await page.waitForSelector('#ctl00_ContentPlaceHolder1_RepeaterMoedas_ctl01_ButtonMoeda');
+  await btnBitcoin.click()
+}
+
+const esperarValorDaRetiradaSerPreenchido = async (page) => {
+  await page.waitForSelector('#ctl00_ContentPlaceHolder1_TextBoxValorRetirada');
+  const awaitValueQuery = 'document.getElementById("ctl00_ContentPlaceHolder1_LiteralLimiteDisponivel").innerHTML'
+  await page.waitForFunction(awaitValueQuery +' != "0,00"');
+}
+
+const solicitar = async (page) => {
+  await sleep(2000)
+  await page.evaluate(() => $('#aEnviar').click());
+}
+
+const informarPIN = async (page) => {
+  await page.waitForSelector('#divRetirada #ctl00_ContentPlaceHolder1_TextBoxPIN');
+  await sleep(2000)
+  await page.focus('#ctl00_ContentPlaceHolder1_TextBoxPIN')
+  await page.type('#divRetirada #ctl00_ContentPlaceHolder1_TextBoxPIN', '8564', {delay: 200})
+  await page.evaluate(() => $('#divRetirada input[name="ctl00$ContentPlaceHolder1$Continuar"]').click())
+}
+
+const esperarModalEFechaLa = async (page, timeout) => {
+  let closeModalButton = null;
+  try {
+    closeModalButton = await page.waitForSelector('.modal-footer .btn.btn-default', {timeout})
+  } catch (e) {
+    closeModalButton = null
+    return false
+  }
+
+  if (closeModalButton){
+    closeModalButton.click()
+    return true
+  }
+}
 
 
 function timeout(ms) {

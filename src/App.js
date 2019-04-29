@@ -11,7 +11,7 @@ const NEGOCIE_LIVRO_URL = "https://broker.negociecoins.com.br/api/v3/btcbrl/orde
 const BAT_URL = "https://broker.batexchange.com.br/api/v3/brleth/ticker"
 const POLONIEX = "https://poloniex.com/public?command=returnTicker"
 const MOEDAS_URL="http://68.183.139.142:3001/api/cotacoes";
-const PCT_CONVERSAO = 1.05;
+const PCT_CONVERSAO = 1.074;
 
 const DOLAR = 3.9224
 
@@ -46,7 +46,8 @@ class App extends Component {
     erroNegocie: false
   }
 
-  valores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19].map( v => v * 1000 + 10000)
+  valores = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25, 30, 35, 40]
+    .map( v => v * 1000 + 10000)
 
   componentDidMount() {
     this.interval = setInterval(this.atualizarCotacoes, 3000)
@@ -275,7 +276,7 @@ class App extends Component {
               <div>{quantidade}</div>
             </div>
             <div className="field">
-              <label>Vol. Total Venda</label>
+              <label>Vol. Total</label>
               <div>{this.format(volume)}</div>
             </div>
           </div>
@@ -289,7 +290,7 @@ class App extends Component {
               <div>{this.format(venda - tembtc.sell)}</div>
             </div>
             <div className="field">
-              <label>Vol. Total Compra</label>
+              <label>Vol. Total</label>
               <div>{this.format(volumeCompra)}</div>
             </div>
           </div>
