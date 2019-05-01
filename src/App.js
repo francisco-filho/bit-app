@@ -234,8 +234,8 @@ class App extends Component {
     if (!temeth.buy && !negocie.buy && !cotacaoExternaBTC_ETH)
       return null
 
-    const alertaETH = temeth.buy >= parseFloat((""+cotacaoExternaBTC_ETH.highestBid).substr(0, 6))
-    const alertaBTC = (venda - (cotacaoDolar.highestBid * dolar * pctConversao)) > 15;
+    const alertaETH = temeth.buy >= parseFloat((""+cotacaoExternaBTC_ETH.last).substr(0, 6))
+    const alertaBTC = (venda - (cotacaoDolar.last * dolar * pctConversao)) > 15;
     const sugestao = cotacaoDolar.last * dolar * pctConversao;
 
     return (
@@ -331,7 +331,7 @@ class App extends Component {
                 }}><i className="fa fa-refresh"/></a>
               </label>
               <div style={{color: alertaBTC ? 'orange': 'white'}}>
-                <span>{this.format(cotacaoDolar.highestBid * dolar * pctConversao, true)}</span>
+                <span>{this.format(cotacaoDolar.last * dolar * pctConversao, true)}</span>
                 <span className={classNames({diferenca: true, 'green': sugestao >= venda, 'red': sugestao < venda})}>
                 { sugestao >= venda ? '+' : '-'}{this.format(Math.abs(sugestao - venda))}</span>
               </div>
@@ -404,8 +404,12 @@ class CountDown extends React.Component {
   }
 
   togglePaused = () => {
+    if (this.state.paused){
+      const de = new Date().setMinutes(new Date().getMinutes() + this.props.minutos);
+      saveToStorage('clock-de', de)
+      this.setState({de})
+    }
     this.setState({paused: !this.state.paused})
-    console.log('toggole', this.state.paused)
   }
 
   alertar = () => {
@@ -420,7 +424,6 @@ class CountDown extends React.Component {
 
     saveToStorage('clock-paused', false)
     saveToStorage('clock-de', de)
-
 
     this.interval = setInterval(() => {
       let ate2 = new Date();
@@ -447,11 +450,12 @@ class CountDown extends React.Component {
   render(){
     const {minutoAtual, paused} = this.state
 
-    //if (minutoAtual == null) return null;
-
     return <div className="countdown">
-      <span onClick={this.togglePaused}><i className="fa fa-clock-o"/></span>
-      <span>{minutoAtual}</span>
+      <span onClick={this.togglePaused}>
+        <i className={classNames("fa", {'fa-stop-circle': !paused, 'fa-play-circle': paused})}/>
+        </span>
+      {/*<span onClick={this.start}><i className="fa fa-play-circle"/></span>*/}
+      <span>{paused ? '' :  minutoAtual}</span>
     </div>
   }
 }
