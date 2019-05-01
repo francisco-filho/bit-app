@@ -11,7 +11,7 @@ const NEGOCIE_LIVRO_URL = "https://broker.negociecoins.com.br/api/v3/btcbrl/orde
 const BAT_URL = "https://broker.batexchange.com.br/api/v3/brleth/ticker"
 const POLONIEX = "https://poloniex.com/public?command=returnTicker"
 const MOEDAS_URL="http://68.183.139.142:3001/api/cotacoes";
-const PCT_CONVERSAO = 1.0645;
+const PCT_CONVERSAO = 1.0514;
 
 const DOLAR = 3.9224
 
@@ -35,6 +35,7 @@ class App extends Component {
     atualizando: false,
     cotacaoExternaBTC_ETH: 0,
     cotacaoDolar: 0,
+    cotacaoEthDolar: 0,
     pctConversao: getFromStorage('pctConversao', PCT_CONVERSAO),
     alertaETH: false,
     volume: 0,
@@ -76,7 +77,11 @@ class App extends Component {
   atualizarCotacaoExterna = () => {
       get(POLONIEX).then(resp => resp).then(resp => {
         if (resp)
-          this.setState({ cotacaoDolar: resp.USDC_BTC, cotacaoExternaBTC_ETH: resp.BTC_ETH})
+          this.setState({
+            cotacaoDolar: resp.USDC_BTC,
+            cotacaoEthDolar: resp.USDC_ETH,
+            cotacaoExternaBTC_ETH: resp.BTC_ETH
+          })
       })
   }
 
@@ -111,8 +116,8 @@ class App extends Component {
         bat: resp[3],
       }
 
-      let vendaBtc = result.temeth.buy ? result.temeth.buy : vendaBtc
-      let venda = result.negocie.buy ? parseFloat(result.negocie.buy) : venda
+      let vendaBtc = result.temeth && result.temeth.buy ? result.temeth.buy : vendaBtc
+      let venda = result.negocie && result.negocie.buy ? parseFloat(result.negocie.buy) : venda
 
       let vlrCompra = capital / result.bat.sell
       let vlrVendaBtc  = vlrCompra * vendaBtc
@@ -205,6 +210,7 @@ class App extends Component {
 
   render() {
     const {cotacaoDolar,
+        cotacaoEthDolar,
         venda,
         tembtc,
         temeth,
@@ -230,7 +236,7 @@ class App extends Component {
 
     const alertaETH = temeth.buy >= parseFloat((""+cotacaoExternaBTC_ETH.highestBid).substr(0, 6))
     const alertaBTC = (venda - (cotacaoDolar.highestBid * dolar * pctConversao)) > 15;
-    const sugestao = cotacaoDolar.highestBid * dolar * pctConversao;
+    const sugestao = cotacaoDolar.last * dolar * pctConversao;
 
     return (
       <div className="App">
@@ -258,6 +264,9 @@ class App extends Component {
                   this.valores.map(v => <option value={v}>{this.format(v, true)}</option>)
                 }
               </select>
+            </div>
+            <div className="field">
+              {/*<CountDown minutos={45}/>*/}
             </div>
           </div>
           <header>BTC</header>
@@ -305,7 +314,7 @@ class App extends Component {
               {
                  erroTemeth ?
                    <input type="number" step="0,0001" value={vendaBtc} onChange={this.handleVendaBtcChange}/> :
-                   <div>{temeth.buy} <span className={classNames({'alerta': alertaETH})}>({cotacaoExternaBTC_ETH.highestBid})</span></div>
+                   <div>{temeth.buy} <span className={classNames({'alerta': alertaETH})}>({cotacaoExternaBTC_ETH.last})</span></div>
               }
             </div>
           </div>
@@ -338,12 +347,12 @@ class App extends Component {
           </div>
         </div>
         <hr/>
-        <header>BTC - Cotação Externa</header>
+        <header>Cotação Externa</header>
         <div className="cotacao">
           <table>
             <thead>
             <tr>
-              <th>Cotação</th>
+              <th>Moeda</th>
               <th>US$</th>
               <th>R$</th>
               <th>%</th>
@@ -351,26 +360,18 @@ class App extends Component {
             </thead>
             <tbody>
               <tr>
-                <td>lance +alto</td>
-                <td>{parseFloat(cotacaoDolar.highestBid).toFixed(4)}</td>
-                <td>{this.format(cotacaoDolar.highestBid * dolar)}</td>
-                <td><a onClick={e => this.updatePctConversao(cotacaoDolar.highestBid)}>
-                  {this.percentualAplicado(cotacaoDolar.highestBid * dolar, venda).toFixed(4)}
+                <td>BTC</td>
+                <td>{parseFloat(cotacaoDolar.last).toFixed(4)}</td>
+                <td>{this.format(cotacaoDolar.last * dolar)}</td>
+                <td><a onClick={e => this.updatePctConversao(cotacaoDolar.last)}>
+                  {this.percentualAplicado(cotacaoDolar.last * dolar, venda).toFixed(4)}
                 </a></td>
               </tr>
               <tr>
-                <td>Ultima</td>
-                <td>{parseFloat(cotacaoDolar.last).toFixed(4)}</td>
-                <td>{this.format(cotacaoDolar.last* dolar)}</td>
-                <td><a onClick={e => this.updatePctConversao(cotacaoDolar.last)}>
-                  {this.percentualAplicado(cotacaoDolar.last* dolar, venda).toFixed(4)}</a></td>
-              </tr>
-              <tr>
-                <td>menor venda</td>
-                <td>{parseFloat(cotacaoDolar.lowestAsk).toFixed(4)}</td>
-                <td>{this.format(cotacaoDolar.lowestAsk* dolar)}</td>
-                <td><a onClick={e => this.updatePctConversao(cotacaoDolar.lowestAsk)}>
-                  {this.percentualAplicado(cotacaoDolar.lowestAsk* dolar, venda).toFixed(4)}</a></td>
+                <td>ETH</td>
+                <td>{parseFloat(cotacaoEthDolar.last).toFixed(4)}</td>
+                <td>{this.format(cotacaoEthDolar.last* dolar)}</td>
+                <td>{this.percentualAplicado(cotacaoEthDolar.last* dolar, bat.sell).toFixed(4)}</td>
               </tr>
             </tbody>
           </table>
@@ -383,6 +384,78 @@ class App extends Component {
 const MensagemErro = ({mensagem}) => <div className="mensagem erro">
   <i className="fa fa-bug"/><span>{mensagem}</span>
 </div>
+
+class CountDown extends React.Component {
+  state = {
+    minutoAtual: null,
+    de: null,
+    ate: new Date(),
+    paused: true
+  }
+
+  componentDidMount(){
+    const {minutos} = this.props;
+    let de = new Date().setMinutes(new Date().getMinutes() + minutos);
+    const ate = new Date();
+
+    de = getFromStorage('clock-de', de)
+    const paused = getFromStorage('clock-paused', true)
+    this.calcularCountdown(de, ate, minutos)
+  }
+
+  togglePaused = () => {
+    this.setState({paused: !this.state.paused})
+    console.log('toggole', this.state.paused)
+  }
+
+  alertar = () => {
+    this.setState({minutos: null, paused: true})
+    saveToStorage('clock-paused', true);
+  }
+
+  calcularCountdown = (de, ate, minutos) => {
+    if (de < new Date()){
+      de = new Date().setMinutes(new Date().getMinutes() + minutos);
+    }
+
+    saveToStorage('clock-paused', false)
+    saveToStorage('clock-de', de)
+
+
+    this.interval = setInterval(() => {
+      let ate2 = new Date();
+      let distance = de  - ate2
+
+      if (this.state.paused) return
+
+      /*if (distance <= 0){
+        this.alertar()
+        return
+      }*/
+
+      let minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+      this.setState({minutoAtual: `${minutes}min e ${seconds}secs`})
+    }, 1000)
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval)
+    saveToStorage('clock-de', undefined)
+  }
+
+  render(){
+    const {minutoAtual, paused} = this.state
+
+    //if (minutoAtual == null) return null;
+
+    return <div className="countdown">
+      <span onClick={this.togglePaused}><i className="fa fa-clock-o"/></span>
+      <span>{minutoAtual}</span>
+    </div>
+  }
+}
+
 
 
 export default App;
