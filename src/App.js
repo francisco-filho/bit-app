@@ -305,7 +305,7 @@ class App extends Component {
               <div>{quantidade}</div>
             </div>
             <div className="field">
-              <label>Vol. ordens compra</label>
+              <label>Vol. compra</label>
               <div>{this.format(volume)}</div>
             </div>
           </div>
