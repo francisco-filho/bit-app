@@ -8,10 +8,12 @@ const TEMBTC_URL = "https://broker.tembtc.com.br/api/v3/btcbrl/ticker"
 const TEMETH_URL = "https://broker.tembtc.com.br/api/v3/ethbtc/ticker"
 const NEGOCIE_URL = "https://broker.negociecoins.com.br/api/v3/btcbrl/ticker"
 const NEGOCIE_LIVRO_URL = "https://broker.negociecoins.com.br/api/v3/btcbrl/orderbook"
+const TEM_ETH_LIVRO_URL = "https://broker.tembtc.com.br/api/v3/btceth/orderbook"
+
 const BAT_URL = "https://broker.batexchange.com.br/api/v3/brleth/ticker"
 const POLONIEX = "https://poloniex.com/public?command=returnTicker"
 const MOEDAS_URL="http://68.183.139.142:3001/api/cotacoes";
-const PCT_CONVERSAO = 1.05;
+const PCT_CONVERSAO = 1.0485;
 
 const DOLAR = 3.9224
 
@@ -59,9 +61,9 @@ class App extends Component {
     this.interval = setInterval(this.atualizarCotacoes, 3000)
     this.intervalPoly = setInterval(this.atualizarCotacaoExterna, 1000 * 60 * 1)
     this.intervalDolar = setInterval(this.atualizarCotacaoDolar, 1000 * 60 * 2)
-    this.intervalLivro = setInterval(this.atualizarLivro, 1000 * 4)
+    this.intervalLivro = setInterval(this.atualizarLivros, 1000 * 5)
     this.atualizarCotacaoDolar()
-    this.atualizarLivro()
+    this.atualizarLivros()
     setTimeout(this.atualizarCotacaoExterna, 2000)
   }
 
@@ -90,8 +92,8 @@ class App extends Component {
       })
   }
 
-  atualizarLivro = () => {
-    const {negocie} = this.state
+  atualizarLivros = () => {
+    const {negocie, temeth} = this.state
 
     get(NEGOCIE_LIVRO_URL).then(resp => {
       if (!negocie) return
@@ -102,6 +104,17 @@ class App extends Component {
           volumeCompra: livro.volumeCompra,
           quantidadeCompra: livro.quantidadeCompra
         })
+    })
+
+    get(TEM_ETH_LIVRO_URL).then(resp => {
+      if (!negocie) return
+      const livro = this.volumeLivroNegocie(resp, temeth.buy)
+      this.setState({
+        volumeEth: livro.volume,
+        quantidadeEth: livro.quantidade,
+        volumeCompraEth: livro.volumeCompra,
+        quantidadeCompraEth: livro.quantidadeCompra
+      })
     })
   }
 
@@ -232,7 +245,9 @@ class App extends Component {
         quantidade,
         erroNegocie,
         erroTemeth,
-      volumeCompra
+        volumeCompra,
+        volumeEth,
+        volumeCompraEth
 
       } = this.state
 
@@ -290,7 +305,7 @@ class App extends Component {
               <div>{quantidade}</div>
             </div>
             <div className="field">
-              <label>Vol. Total</label>
+              <label>Vol. ordens compra</label>
               <div>{this.format(volume)}</div>
             </div>
           </div>
@@ -323,6 +338,17 @@ class App extends Component {
               }
             </div>
           </div>
+          <div className="cotacao">
+            <div className="field">
+              <label>Vol. Ordens Compra</label>
+              <div>{this.format(volumeEth)}</div>
+            </div>
+            <div className="field">
+              <label>Vol. Total</label>
+              <div>{this.format(volumeCompraEth)}</div>
+            </div>
+          </div>
+
         </div>
         <hr/>
         <header>Sugestão</header>
