@@ -288,7 +288,7 @@ class App extends Component {
             </div>
           </div>
 
-          <header>ETH</header>
+          <header><div><i className="fa fa-usd"></i><span>ETH</span></div></header>
           <div className="cotacao">
             <div className="field">
               <label>Compra em R$</label>
@@ -313,7 +313,7 @@ class App extends Component {
               <div>{this.format(volumeCompraEth)}</div>
             </div>
           </div>
-          <header>BTC</header>
+          <header><div><i className="fa fa-btc"/>BTC</div></header>
           <div className="cotacao">
             <div className="field">
               <label>Valor</label>

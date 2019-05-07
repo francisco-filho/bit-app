@@ -48,6 +48,12 @@ header {
     font-weight: 100;
     color: dodgerblue;
 }
+
+header .fa {
+    margin-right: 4px;
+    margin-left: 0;
+    color: dodgerblue;
+}
 .cotacoes .cotacao {
   display: flex;
 }
@@ -200,3 +206,4 @@ table td:first-of-type {
 }
 
 @import "~font-awesome/css/font-awesome.min.css";
+/*//@import "~@fortawesome/fontawesome-free/css/fontawesome.min.css";*/
