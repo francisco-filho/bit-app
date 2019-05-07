@@ -38,6 +38,7 @@ class App extends Component {
     cotacaoExternaBTC_ETH: 0,
     cotacaoDolar: 0,
     cotacaoEthDolar: 0,
+    cotacoesExternas: {},
     pctConversao: getFromStorage('pctConversao', PCT_CONVERSAO),
     alertaETH: false,
     volume: 0,
@@ -87,7 +88,8 @@ class App extends Component {
           this.setState({
             cotacaoDolar: resp.USDC_BTC,
             cotacaoEthDolar: resp.USDC_ETH,
-            cotacaoExternaBTC_ETH: resp.BTC_ETH
+            cotacaoExternaBTC_ETH: resp.BTC_ETH,
+            cotacoesExternas: resp
           })
       })
   }
@@ -140,7 +142,7 @@ class App extends Component {
       let vlrCompra = capital / result.bat.sell
       let vlrVendaBtc  = vlrCompra * vendaBtc
       let vlrVenda = vlrVendaBtc * venda
-      const taxas = (vlrVenda * 0.01975) + 8
+      const taxas = (vlrVenda * 0.01975) + (0.0003 * venda)
       const lucroBat = (vlrVenda - capital) - taxas
       const pctBat = (lucroBat / capital) * 100
       this.setState({...result, lucroBat, pctBat, atualizacao: new Date(),
@@ -239,6 +241,7 @@ class App extends Component {
         pctBat,
         dolar,
         cotacaoExternaBTC_ETH,
+        cotacoesExternas,
         pctConversao,
         volume,
         vendaBtc,
@@ -292,7 +295,7 @@ class App extends Component {
           <header>BTC</header>
           <div className="cotacao">
             <div className="field">
-              <label>Venda</label>
+              <label>Valor</label>
               <div>
                 {erroNegocie ?
                   <input type="number" value={venda} onChange={this.handleVendaChange}/> :
@@ -301,26 +304,23 @@ class App extends Component {
                 </div>
             </div>
             <div className="field">
-              <label>Qtd.Ordens</label>
-              <div>{quantidade}</div>
+              <label>Diferença p/ TEM:</label>
+              <div>{this.format(venda - tembtc.sell)}</div>
             </div>
+
+          </div>
+          <div className="cotacao">
             <div className="field">
               <label>Vol. compra</label>
               <div>{this.format(volume)}</div>
             </div>
-          </div>
-          <div className="cotacao">
             <div className="field">
-              <label>Compra</label>
-              <div>{this.format(tembtc.sell)}</div>
-            </div>
-            <div className="field">
-              <label>Diferença</label>
-              <div>{this.format(venda - tembtc.sell)}</div>
-            </div>
-            <div className="field">
-              <label>Vol. Total</label>
+              <label>Vol. venda</label>
               <div>{this.format(volumeCompra)}</div>
+            </div>
+            <div className="field">
+              <label>Qtd.Ordens</label>
+              <div>{quantidade}</div>
             </div>
           </div>
           <header>ETH</header>
@@ -340,11 +340,11 @@ class App extends Component {
           </div>
           <div className="cotacao">
             <div className="field">
-              <label>Vol. Ordens Compra</label>
+              <label>Vol. Compra</label>
               <div>{this.format(volumeEth)}</div>
             </div>
             <div className="field">
-              <label>Vol. Total</label>
+              <label>Vol. Venda</label>
               <div>{this.format(volumeCompraEth)}</div>
             </div>
           </div>
@@ -383,27 +383,45 @@ class App extends Component {
           <table>
             <thead>
             <tr>
-              <th>Moeda</th>
-              <th>US$</th>
+              <th>Par</th>
+              <th>Valor</th>
               <th>R$</th>
               <th>%</th>
             </tr>
             </thead>
             <tbody>
               <tr>
-                <td>BTC</td>
+                <td>USDC_BTC</td>
                 <td>{parseFloat(cotacaoDolar.last).toFixed(4)}</td>
                 <td>{this.format(cotacaoDolar.last * dolar)}</td>
                 <td><a onClick={e => this.updatePctConversao(cotacaoDolar.last)}>
                   {this.percentualAplicado(cotacaoDolar.last * dolar, venda).toFixed(4)}
                 </a></td>
               </tr>
+              {
+                cotacoesExternas.USDT_BTC && <tr>
+                  <td>USDT_BTC</td>
+                  <td>{parseFloat(cotacoesExternas.USDT_BTC.last).toFixed(4)}</td>
+                  <td>{this.format(cotacoesExternas.USDT_BTC.last * dolar)}</td>
+                  <td><a onClick={e => this.updatePctConversao(cotacoesExternas.USDT_BTC.last)}>
+                    {this.percentualAplicado(cotacoesExternas.USDT_BTC.last * dolar, venda).toFixed(4)}
+                  </a></td>
+                </tr>
+              }
               <tr>
-                <td>ETH</td>
+                <td>USDC_ETH</td>
                 <td>{parseFloat(cotacaoEthDolar.last).toFixed(4)}</td>
                 <td>{this.format(cotacaoEthDolar.last* dolar)}</td>
                 <td>{this.percentualAplicado(cotacaoEthDolar.last* dolar, bat.sell).toFixed(4)}</td>
               </tr>
+              {
+                cotacoesExternas.USDT_ETH && <tr>
+                  <td>USDT_ETH</td>
+                  <td>{parseFloat(cotacoesExternas.USDT_ETH.last).toFixed(4)}</td>
+                  <td>{this.format(cotacoesExternas.USDT_ETH.last* dolar)}</td>
+                  <td>{this.percentualAplicado(cotacoesExternas.USDT_ETH.last* dolar, bat.sell).toFixed(4)}</td>
+                </tr>
+              }
             </tbody>
           </table>
         </div>
