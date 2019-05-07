@@ -57,6 +57,10 @@ header {
     color: #aaa;
 }
 
+.preco {
+    color: skyblue;
+}
+
 .field {
     font-size: 1.2rem;
     margin-right: 20px;

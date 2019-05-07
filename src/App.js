@@ -292,16 +292,42 @@ class App extends Component {
               {/*<CountDown minutos={45}/>*/}
             </div>
           </div>
+
+          <header>ETH</header>
+          <div className="cotacao">
+            <div className="field">
+              <label>Compra em R$</label>
+              <div><span className="preco">{this.format(bat.sell)}</span></div>
+            </div>
+            <div className="field">
+              <label>Venda em BTC</label>
+              {
+                 erroTemeth ?
+                   <input type="number" step="0,0001" value={vendaBtc} onChange={this.handleVendaBtcChange}/> :
+                     <div><span className="preco">{temeth.buy}</span> <span className={classNames({'alerta': alertaETH})}>({cotacaoExternaBTC_ETH.last})</span></div>
+              }
+            </div>
+          </div>
+          <div className="cotacao">
+            <div className="field">
+              <label>Vol. Compra</label>
+              <div>{this.format(volumeEth)}</div>
+            </div>
+            <div className="field">
+              <label>Vol. Venda</label>
+              <div>{this.format(volumeCompraEth)}</div>
+            </div>
+          </div>
           <header>BTC</header>
           <div className="cotacao">
             <div className="field">
               <label>Valor</label>
               <div>
                 {erroNegocie ?
-                  <input type="number" value={venda} onChange={this.handleVendaChange}/> :
-                  <span>{this.format(venda)}</span>
+                    <input type="number" value={venda} onChange={this.handleVendaChange}/> :
+                    <span className="preco">R$ {this.format(venda)}</span>
                 }
-                </div>
+              </div>
             </div>
             <div className="field">
               <label>Diferença p/ TEM:</label>
@@ -323,31 +349,7 @@ class App extends Component {
               <div>{quantidade}</div>
             </div>
           </div>
-          <header>ETH</header>
-          <div className="cotacao">
-            <div className="field">
-              <label>Compra em R$</label>
-              <div>{this.format(bat.sell)}</div>
-            </div>
-            <div className="field">
-              <label>Venda em BTC</label>
-              {
-                 erroTemeth ?
-                   <input type="number" step="0,0001" value={vendaBtc} onChange={this.handleVendaBtcChange}/> :
-                   <div>{temeth.buy} <span className={classNames({'alerta': alertaETH})}>({cotacaoExternaBTC_ETH.last})</span></div>
-              }
-            </div>
-          </div>
-          <div className="cotacao">
-            <div className="field">
-              <label>Vol. Compra</label>
-              <div>{this.format(volumeEth)}</div>
-            </div>
-            <div className="field">
-              <label>Vol. Venda</label>
-              <div>{this.format(volumeCompraEth)}</div>
-            </div>
-          </div>
+
 
         </div>
         <hr/>
