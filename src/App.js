@@ -3,6 +3,7 @@ import './App.css';
 import {get} from './util/http'
 import 'whatwg-fetch'
 import classNames from "classnames";
+import range from 'lodash/range'
 
 const TEMBTC_URL = "https://broker.tembtc.com.br/api/v3/btcbrl/ticker"
 const TEMETH_URL = "https://broker.tembtc.com.br/api/v3/ethbtc/ticker"
@@ -50,13 +51,7 @@ class App extends Component {
     erroNegocie: false
   }
 
-  valores = [
-    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-    11, 12, 13, 14, 15, 16, 17, 18, 19,
-    20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
-    30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
-    40, 41, 42, 43, 44, 50]
-    .map( v => v * 1000 + 10000)
+  valores = range(100).map( v => v * 1000 + 10000)
 
   componentDidMount() {
     this.interval = setInterval(this.atualizarCotacoes, 3000)
@@ -405,9 +400,9 @@ class App extends Component {
                   <td>USDT_BTC</td>
                   <td>{parseFloat(cotacoesExternas.USDT_BTC.last).toFixed(4)}</td>
                   <td>{this.format(cotacoesExternas.USDT_BTC.last * dolar)}</td>
-                  <td><a onClick={e => this.updatePctConversao(cotacoesExternas.USDT_BTC.last)}>
+                  <td>{/*<a onClick={e => this.updatePctConversao(cotacoesExternas.USDT_BTC.last)}>*/}
                     {this.percentualAplicado(cotacoesExternas.USDT_BTC.last * dolar, venda).toFixed(4)}
-                  </a></td>
+                  {/*</a>*/}</td>
                 </tr>
               }
               <tr>
