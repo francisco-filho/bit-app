@@ -253,7 +253,7 @@ class App extends Component {
       return null
 
     const alertaETH = temeth.buy >= parseFloat((""+cotacaoExternaBTC_ETH.last).substr(0, 6)) + 0.0003
-    const alertaBTC = (venda - (cotacaoDolar.last * dolar * pctConversao)) > 15;
+    const alertaBTC = (venda - (cotacaoDolar.last * dolar * pctConversao)) > 50;
     const sugestao = cotacaoDolar.last * dolar * pctConversao;
 
     return (
