@@ -14,7 +14,7 @@ const TEM_ETH_LIVRO_URL = "https://broker.tembtc.com.br/api/v3/btceth/orderbook"
 const BAT_URL = "https://broker.batexchange.com.br/api/v3/brleth/ticker"
 const POLONIEX = "https://poloniex.com/public?command=returnTicker"
 const MOEDAS_URL="http://68.183.139.142:3001/api/cotacoes";
-const PCT_CONVERSAO = 1.0485;
+const PCT_CONVERSAO = 1.0351;
 
 const DOLAR = 3.9224
 
@@ -252,7 +252,7 @@ class App extends Component {
     if (!temeth.buy && !negocie.buy && !cotacaoExternaBTC_ETH)
       return null
 
-    const alertaETH = temeth.buy >= parseFloat((""+cotacaoExternaBTC_ETH.last).substr(0, 6))
+    const alertaETH = temeth.buy >= parseFloat((""+cotacaoExternaBTC_ETH.last).substr(0, 6)) + 0.0003
     const alertaBTC = (venda - (cotacaoDolar.last * dolar * pctConversao)) > 15;
     const sugestao = cotacaoDolar.last * dolar * pctConversao;
 
