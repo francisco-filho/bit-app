@@ -14,7 +14,7 @@ const TEM_ETH_LIVRO_URL = "https://broker.tembtc.com.br/api/v3/btceth/orderbook"
 const BAT_URL = "https://broker.batexchange.com.br/api/v3/brleth/ticker"
 const POLONIEX = "https://poloniex.com/public?command=returnTicker"
 const MOEDAS_URL="http://68.183.139.142:3001/api/cotacoes";
-const PCT_CONVERSAO = 1.039;
+const PCT_CONVERSAO = 1.041;
 
 const DOLAR = 3.9224
 
