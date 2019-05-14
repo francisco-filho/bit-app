@@ -2,6 +2,7 @@
   "name": "bit-app",
   "version": "0.1.0",
   "private": true,
+  "homepage": "/bitcoin/'",
   "dependencies": {
     "body-parser": "^1.18.3",
     "chrome-launcher": "^0.10.5",
