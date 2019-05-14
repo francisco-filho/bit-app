@@ -66,6 +66,8 @@ class App extends Component {
     this.atualizarCotacaoDolar()
     this.atualizarLivros()
     setTimeout(this.atualizarCotacaoExterna, 2000)
+    if (window.location.href.indexOf('capimgrosso') >=0)
+      initGoogle(auth => console.log(auth));
   }
 
   componentWillUnmount() {
@@ -512,6 +514,22 @@ class CountDown extends React.Component {
   }
 }
 
+
+function initGoogle(func) {
+  window.gapi.load('auth2', function() {
+    window.gapi.auth2.init({
+          client_id: GOOGLE_CLIENT_ID
+        })
+        .then(func);
+  });
+}
+const googleLoadTimer = setInterval(() => {
+  if (window.gapi) {
+    initGoogle(() => {
+      clearInterval(googleLoadTimer);
+    });
+  }
+}, 90);
 
 
 export default App;
