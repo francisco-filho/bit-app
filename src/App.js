@@ -268,7 +268,7 @@ class App extends Component {
 
       } = this.state
 
-    if (!temeth.buy && !negocie.buy && !cotacaoExternaBTC_ETH)
+    if (!temeth.buy && !negocie && !negocie.buy && !cotacaoExternaBTC_ETH)
       return null
 
     const alertaETH = temeth.buy >= parseFloat((""+cotacaoExternaBTC_ETH.last).substr(0, 6)) + 0.0003
