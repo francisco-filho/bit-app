@@ -13,7 +13,7 @@ app.use(pino);
 
 let cotacoes = {}
 
-setInterval(queryApi, 1000 * 60 * 10)
+setInterval(queryApi, 1000 * 60 * 15)
 queryApi()
 
 app.get('/api/cotacoes', (req, res) => {
