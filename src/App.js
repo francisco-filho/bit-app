@@ -19,7 +19,7 @@ const PCT_CONVERSAO = 1.031;
 const GOOGLE_CLIENT_ID="1098141721569-72hg5nhpa0donvdevu0i58466dg4ph7f.apps.googleusercontent.com";
 const GOOGLE_CLIENT_SECRET="aPiG4tYZu5owuKgYh30wT3Jn"
 
-const DOLAR = 3.9224
+const DOLAR = 3.9791
 
 const saveToStorage = (key, value) => localStorage.setItem(key, value)
 const getFromStorage = (key, defaultValue) => {
@@ -66,8 +66,9 @@ class App extends Component {
     this.atualizarCotacaoDolar()
     this.atualizarLivros()
     setTimeout(this.atualizarCotacaoExterna, 2000)
-    if (window.location.href.indexOf('capimgrosso') >=0)
+    if (this.noDominio()) {
       initGoogle(auth => console.log(auth));
+    }
   }
 
   componentWillUnmount() {
@@ -75,6 +76,17 @@ class App extends Component {
     clearInterval(this.intervalPoly)
     clearInterval(this.intervalDolar)
     clearInterval(this.intervalLivro)
+  }
+
+  noDominio = () => window.location.href.indexOf('capimgrosso') >= 0
+
+  usuarioLogado = () => {
+    try {
+      return window.gapi.auth2.getAuthInstance().isSignedIn.get()
+    } catch (e) {
+      console.error(e)
+      return false;
+    }
   }
 
   atualizarCotacaoDolar = () => {
@@ -265,7 +277,7 @@ class App extends Component {
 
     return (
       <div className="App">
-        <GoogleSignIn/>
+        { this.noDominio() && !this.usuarioLogado() && <GoogleSignIn/> }
         <div className="mensagens">
           { erroTemeth && <MensagemErro mensagem="API TEMBTC / ETH com problemas"/>}
           { erroNegocie && <MensagemErro mensagem="API NEGOCIE com problemas"/>}
@@ -534,18 +546,22 @@ const googleLoadTimer = setInterval(() => {
 const GOOGLE_BUTTON_ID = 'google-sign-in-button';
 class GoogleSignIn extends React.Component {
   componentDidMount() {
-    window.gapi.signin2.render(
-        GOOGLE_BUTTON_ID,
-        {
-          width: 200,
-          height: 50,
-          onsuccess: this.onSuccess,
-        },
-    );
+    if (window.location.href.indexOf('capimgrosso') >= 0){
+      window.gapi.signin2.render(
+          GOOGLE_BUTTON_ID,
+          {
+            width: 200,
+            height: 50,
+            onsuccess: this.onSuccess,
+          },
+      );
+    }
+
   }
   onSuccess(googleUser) {
     const profile = googleUser.getBasicProfile();
     console.log("Name: " + profile.getName());
+    saveToStorage('currentUser', profile);
   }
   render() {
     return (
