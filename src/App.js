@@ -16,6 +16,8 @@ const POLONIEX = "https://poloniex.com/public?command=returnTicker"
 const MOEDAS_URL="http://www.capimgrosso.com:3001/api/cotacoes";
 //const MOEDAS_URL="http://68.183.139.142:3001/api/cotacoes";
 const PCT_CONVERSAO = 1.031;
+const GOOGLE_CLIENT_ID="1098141721569-72hg5nhpa0donvdevu0i58466dg4ph7f.apps.googleusercontent.com";
+const GOOGLE_CLIENT_SECRET="aPiG4tYZu5owuKgYh30wT3Jn"
 
 const DOLAR = 3.9224
 
@@ -24,6 +26,8 @@ const getFromStorage = (key, defaultValue) => {
   const value = localStorage.getItem(key)
   return !value && typeof defaultValue != 'undefined' ? defaultValue : value
 }
+
+
 
 class App extends Component {
   state = {
@@ -259,6 +263,7 @@ class App extends Component {
 
     return (
       <div className="App">
+        <div className="g-signin2" data-onsuccess="onSignIn"></div>
         <div className="mensagens">
           { erroTemeth && <MensagemErro mensagem="API TEMBTC / ETH com problemas"/>}
           { erroNegocie && <MensagemErro mensagem="API NEGOCIE com problemas"/>}
