@@ -547,20 +547,23 @@ const GOOGLE_BUTTON_ID = 'google-sign-in-button';
 class GoogleSignIn extends React.Component {
   componentDidMount() {
     if (window.location.href.indexOf('capimgrosso') >= 0){
-      window.gapi.signin2.render(
-          GOOGLE_BUTTON_ID,
-          {
-            width: 200,
-            height: 50,
-            onsuccess: this.onSuccess,
-          },
-      );
+      try {
+        window.gapi.signin2.render(
+            GOOGLE_BUTTON_ID,
+            {
+              width: 200,
+              height: 50,
+              onsuccess: this.onSuccess,
+            }
+        );
+      } catch (e) {
+        console.error('on google api')
+      }
     }
 
   }
   onSuccess(googleUser) {
     const profile = googleUser.getBasicProfile();
-    console.log("Name: " + profile.getName());
     saveToStorage('currentUser', profile);
   }
   render() {
