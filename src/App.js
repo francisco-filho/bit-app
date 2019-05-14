@@ -275,9 +275,9 @@ class App extends Component {
     const alertaBTC = (venda - (cotacaoDolar.last * dolar * pctConversao)) > 50;
     const sugestao = cotacaoDolar.last * dolar * pctConversao;
 
-    return (
+    return (this.usuarioLogado() ? (
       <div className="App">
-        { this.noDominio() && !this.usuarioLogado() && <GoogleSignIn/> }
+
         <div className="mensagens">
           { erroTemeth && <MensagemErro mensagem="API TEMBTC / ETH com problemas"/>}
           { erroNegocie && <MensagemErro mensagem="API NEGOCIE com problemas"/>}
@@ -443,7 +443,7 @@ class App extends Component {
           </table>
         </div>
       </div>
-    );
+    ) : this.noDominio() && !this.usuarioLogado() && <GoogleSignIn/> );
   }
 }
 
