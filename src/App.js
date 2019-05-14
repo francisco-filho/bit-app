@@ -265,7 +265,7 @@ class App extends Component {
 
     return (
       <div className="App">
-        <div className="g-signin2" data-onsuccess="onSignIn"></div>
+        <GoogleSignIn/>
         <div className="mensagens">
           { erroTemeth && <MensagemErro mensagem="API TEMBTC / ETH com problemas"/>}
           { erroNegocie && <MensagemErro mensagem="API NEGOCIE com problemas"/>}
@@ -531,5 +531,29 @@ const googleLoadTimer = setInterval(() => {
   }
 }, 90);
 
+const GOOGLE_BUTTON_ID = 'google-sign-in-button';
+class GoogleSignIn extends React.Component {
+  componentDidMount() {
+    window.gapi.signin2.render(
+        GOOGLE_BUTTON_ID,
+        {
+          width: 200,
+          height: 50,
+          onsuccess: this.onSuccess,
+        },
+    );
+  }
+  onSuccess(googleUser) {
+    const profile = googleUser.getBasicProfile();
+    console.log("Name: " + profile.getName());
+  }
+  render() {
+    return (
+        <div id={GOOGLE_BUTTON_ID}/>
+    );
+  }
+}
+
 
 export default App;
+
