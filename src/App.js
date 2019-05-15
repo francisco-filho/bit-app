@@ -85,7 +85,7 @@ class App extends Component {
 
   usuarioLogado = () => {
     try {
-      return window.gapi.auth2.getAuthInstance().isSignedIn.catch(e => null).get()
+      return window.gapi.auth2.getAuthInstance().isSignedIn.get()
     } catch (e) {
       return false;
     }
