@@ -89,7 +89,6 @@ class App extends Component {
       const l = window.gapi.auth2.getAuthInstance().isSignedIn.get()
       return l;
     } catch (e) {
-      console.log('não está')
       return false;
     }
   }
@@ -292,7 +291,6 @@ class App extends Component {
       } = this.state
 
     if (!temeth.buy && !negocie.buy && !cotacaoExternaBTC_ETH){
-      console.log('saindo do render')
       return null
     }
 
@@ -571,7 +569,6 @@ function initGoogle(func) {
           .then(func).catch(e => null);
     });
   } catch (e) {
-    console.log('on initGoogle')
     if (googleLoadTimer)
       clearInterval(googleLoadTimer)
   }
@@ -598,7 +595,7 @@ class GoogleSignIn extends React.Component {
             }
         );
       } catch (e) {
-        console.log('on google api')
+        console.error('on google api')
       }
     }
 
