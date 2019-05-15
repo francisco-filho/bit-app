@@ -299,8 +299,14 @@ class App extends Component {
     const sugestao = cotacaoDolar.last * dolar * pctConversao;
 
     let valorPassiva = getFromStorage('valorPassiva');
-    if (valorPassiva)
-      valorPassiva = parseFloat(valorPassiva)
+    if (valorPassiva){
+      try {
+        valorPassiva = parseFloat(valorPassiva)
+      } catch (e) {
+        valorPassiva = 0
+      }
+    }
+
     const alertaPassiva = valorPassiva > venda && pctBat < 0.20;
 
     return (this.usuarioLogado() ? (
