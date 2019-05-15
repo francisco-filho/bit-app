@@ -15,9 +15,10 @@ const BAT_URL = "https://broker.batexchange.com.br/api/v3/brleth/ticker"
 const POLONIEX = "https://poloniex.com/public?command=returnTicker"
 const MOEDAS_URL="http://www.capimgrosso.com:3001/api/cotacoes";
 //const MOEDAS_URL="http://68.183.139.142:3001/api/cotacoes";
-const PCT_CONVERSAO = 1.031;
+const PCT_CONVERSAO = 1.0315;
 const GOOGLE_CLIENT_ID="1098141721569-72hg5nhpa0donvdevu0i58466dg4ph7f.apps.googleusercontent.com";
 const GOOGLE_CLIENT_SECRET="aPiG4tYZu5owuKgYh30wT3Jn"
+const TAXA_CONVERSAO_TEMBTC = 1.016505023832982;
 
 const DOLAR = 3.9791
 
@@ -51,16 +52,18 @@ class App extends Component {
     quantidade: 0,
     volumeCompra: 0,
     quantidadeCompra: 0,
+    diffTembtc: 0,
+    valorPassiva: 0,
     erroTembtc: false,
     erroTemeth: false,
     erroNegocie: false
   }
 
-  valores = range(100).map( v => v * 1000 + 10000)
+  valores = range(120).map( v => v * 1000 + 10000)
 
   componentDidMount() {
     this.interval = setInterval(this.atualizarCotacoes, 3000)
-    this.intervalPoly = setInterval(this.atualizarCotacaoExterna, 1000 * 60 * 1)
+    this.intervalPoly = setInterval(this.atualizarCotacaoExterna, 1000 * 20 * 1)
     this.intervalDolar = setInterval(this.atualizarCotacaoDolar, 1000 * 60 * 2)
     this.intervalLivro = setInterval(this.atualizarLivros, 1000 * 5)
     this.atualizarCotacaoDolar()
@@ -82,10 +85,9 @@ class App extends Component {
 
   usuarioLogado = () => {
     try {
-      return window.gapi.auth2.getAuthInstance().isSignedIn.get()
+      return window.gapi.auth2.getAuthInstance().isSignedIn.catch(e => null).get()
     } catch (e) {
-      console.error(e)
-      return false;
+      return true;
     }
   }
 
@@ -136,6 +138,7 @@ class App extends Component {
 
   atualizarCotacoes = () => {
     const {capital, venda, vendaBtc} = this.state
+    const diffAnterior = this.state.diffTembtc
     this.setState({atualizando: true})
     Promise.all([
       get(TEMBTC_URL).then(resp => resp).catch(e => null),
@@ -159,14 +162,30 @@ class App extends Component {
       const taxas = (vlrVenda * 0.01975) + (0.0003 * venda)
       const lucroBat = (vlrVenda - capital) - taxas
       const pctBat = (lucroBat / capital) * 100
+
+      const diffTembtc = venda - result.tembtc.sell;
+      let valorPassiva = venda
+      const calcDiff = (anterior, atual) => anterior - atual
+
+      // verifica se a diferença está diminuindo, o que é sinal de aumento da contação
+      if ((diffTembtc + 1) < diffAnterior){
+        let mudanca = calcDiff(diffAnterior, diffTembtc);
+        valorPassiva = result.tembtc.sell * TAXA_CONVERSAO_TEMBTC;
+        saveToStorage('valorPassiva', valorPassiva)
+      }
+
       this.setState({...result, lucroBat, pctBat, atualizacao: new Date(),
         venda,
         vendaBtc,
+        diffTembtc,
+        valorPassiva,
         erroTemeth: !(!!resp[1]),
         erroNegocie: !(!!resp[2]),
         atualizando: false})
     })
   }
+
+  limparValorPassiva = () => saveToStorage('valorPassiva', 0)
 
   volumeLivroNegocie = (livro, valor) => {
     let result = {
@@ -264,16 +283,23 @@ class App extends Component {
         erroTemeth,
         volumeCompra,
         volumeEth,
-        volumeCompraEth
+        volumeCompraEth,
+        diffTembtc
 
       } = this.state
 
-    if (!temeth.buy && !negocie.buy && !cotacaoExternaBTC_ETH)
+    if (!temeth.buy && !negocie.buy && !cotacaoExternaBTC_ETH){
+      console.log('saindo do render')
       return null
+    }
 
     const alertaETH = temeth.buy >= parseFloat((""+cotacaoExternaBTC_ETH.last).substr(0, 6)) + 0.0003
     const alertaBTC = (venda - (cotacaoDolar.last * dolar * pctConversao)) > 50;
     const sugestao = cotacaoDolar.last * dolar * pctConversao;
+
+    let valorPassiva = getFromStorage('valorPassiva')
+    if (valorPassiva)
+      valorPassiva = parseFloat(valorPassiva)
 
     return (this.usuarioLogado() ? (
       <div className="App">
@@ -345,9 +371,15 @@ class App extends Component {
               </div>
             </div>
             <div className="field">
-              <label>Diferença p/ TEM:</label>
-              <div>{this.format(venda - tembtc.sell)}</div>
+              <label>Dif. TEM:</label>
+              <div>{this.format(diffTembtc)}</div>
             </div>
+            {
+              valorPassiva > venda && pctBat < 0.20 && <div className="field passiva">
+              <label>Passiva:</label>
+                <div><span>{this.format(valorPassiva)}</span><i className="fa fa-times" onClick={this.limparValorPassiva}/></div>
+            </div>
+            }
 
           </div>
           <div className="cotacao">
@@ -528,12 +560,17 @@ class CountDown extends React.Component {
 
 
 function initGoogle(func) {
-  window.gapi.load('auth2', function() {
-    window.gapi.auth2.init({
-          client_id: GOOGLE_CLIENT_ID
-        })
-        .then(func);
-  });
+  try {
+    window.gapi.load('auth2', function () {
+      window.gapi.auth2.init({
+        client_id: GOOGLE_CLIENT_ID
+      })
+          .then(func).catch(e => null);
+    });
+  } catch (e) {
+    if (googleLoadTimer)
+      clearInterval(googleLoadTimer)
+  }
 }
 const googleLoadTimer = setInterval(() => {
   if (window.gapi) {
@@ -557,7 +594,7 @@ class GoogleSignIn extends React.Component {
             }
         );
       } catch (e) {
-        console.error('on google api')
+        console.log('on google api')
       }
     }
 
@@ -573,6 +610,4 @@ class GoogleSignIn extends React.Component {
   }
 }
 
-
 export default App;
-

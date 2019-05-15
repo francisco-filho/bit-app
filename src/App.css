@@ -205,5 +205,15 @@ table td:first-of-type {
     color: orange;
 }
 
+.passiva span {
+    color: #20b020;
+    font-weight: normal;
+}
+.passiva i {
+    color: red;
+}
+
 @import "~font-awesome/css/font-awesome.min.css";
 /*//@import "~@fortawesome/fontawesome-free/css/fontawesome.min.css";*/
+
+
