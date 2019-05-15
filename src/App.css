@@ -205,11 +205,17 @@ table td:first-of-type {
     color: orange;
 }
 
-.passiva span {
+.passiva {
+    opacity: 0.9;
+    color: #444;
+}
+
+.ativa.passiva span {
+    opacity: 1;
     color: #20b020;
     font-weight: normal;
 }
-.passiva i {
+.ativa.passiva i {
     color: red;
 }
 

@@ -17,10 +17,9 @@ const MOEDAS_URL="http://www.capimgrosso.com:3001/api/cotacoes";
 //const MOEDAS_URL="http://68.183.139.142:3001/api/cotacoes";
 const PCT_CONVERSAO = 1.0315;
 const GOOGLE_CLIENT_ID="1098141721569-72hg5nhpa0donvdevu0i58466dg4ph7f.apps.googleusercontent.com";
-const GOOGLE_CLIENT_SECRET="aPiG4tYZu5owuKgYh30wT3Jn"
 const TAXA_CONVERSAO_TEMBTC = 1.016505023832982;
 
-const DOLAR = 3.9791
+const DOLAR = 3.9791;
 
 const saveToStorage = (key, value) => localStorage.setItem(key, value)
 const getFromStorage = (key, defaultValue) => {
@@ -84,9 +83,13 @@ class App extends Component {
   noDominio = () => window.location.href.indexOf('capimgrosso') >= 0
 
   usuarioLogado = () => {
+    if (!this.noDominio())
+      return true;
     try {
-      return window.gapi.auth2.getAuthInstance().isSignedIn.get()
+      const l = window.gapi.auth2.getAuthInstance().isSignedIn.get()
+      return l;
     } catch (e) {
+      console.log('não está')
       return false;
     }
   }
@@ -297,9 +300,10 @@ class App extends Component {
     const alertaBTC = (venda - (cotacaoDolar.last * dolar * pctConversao)) > 50;
     const sugestao = cotacaoDolar.last * dolar * pctConversao;
 
-    let valorPassiva = getFromStorage('valorPassiva')
+    let valorPassiva = getFromStorage('valorPassiva');
     if (valorPassiva)
       valorPassiva = parseFloat(valorPassiva)
+    const alertaPassiva = valorPassiva > venda && pctBat < 0.20;
 
     return (this.usuarioLogado() ? (
       <div className="App">
@@ -374,13 +378,12 @@ class App extends Component {
               <label>Dif. TEM:</label>
               <div>{this.format(diffTembtc)}</div>
             </div>
-            {
-              valorPassiva > venda && pctBat < 0.20 && <div className="field passiva">
+            <div className={classNames({field:true, passiva: true, ativa: alertaPassiva})}>
               <label>Passiva:</label>
-                <div><span>{this.format(valorPassiva)}</span><i className="fa fa-times" onClick={this.limparValorPassiva}/></div>
+                <div><span>{this.format(valorPassiva)}</span>
+                  { alertaPassiva && <i className="fa fa-times" onClick={this.limparValorPassiva}/> }
+                </div>
             </div>
-            }
-
           </div>
           <div className="cotacao">
             <div className="field">
@@ -568,6 +571,7 @@ function initGoogle(func) {
           .then(func).catch(e => null);
     });
   } catch (e) {
+    console.log('on initGoogle')
     if (googleLoadTimer)
       clearInterval(googleLoadTimer)
   }
