@@ -305,6 +305,8 @@ class App extends Component {
       } catch (e) {
         valorPassiva = 0
       }
+    } else {
+      valorPassiva = 0
     }
 
     const alertaPassiva = valorPassiva > venda && pctBat < 0.20;
