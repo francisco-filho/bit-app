@@ -87,7 +87,7 @@ class App extends Component {
     try {
       return window.gapi.auth2.getAuthInstance().isSignedIn.catch(e => null).get()
     } catch (e) {
-      return true;
+      return false;
     }
   }
 
