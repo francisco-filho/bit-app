@@ -58,7 +58,7 @@ class App extends Component {
     erroNegocie: false
   }
 
-  valores = range(120).map( v => v * 1000 + 10000)
+  valores = range(140).map( v => v * 1000 + 10000)
 
   componentDidMount() {
     this.interval = setInterval(this.atualizarCotacoes, 3000)
