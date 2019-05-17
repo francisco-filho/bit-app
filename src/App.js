@@ -15,7 +15,7 @@ const BAT_URL = "https://broker.batexchange.com.br/api/v3/brleth/ticker"
 const POLONIEX = "https://poloniex.com/public?command=returnTicker"
 const MOEDAS_URL="http://www.capimgrosso.com:3001/api/cotacoes";
 //const MOEDAS_URL="http://68.183.139.142:3001/api/cotacoes";
-const PCT_CONVERSAO = 1.0315;
+const PCT_CONVERSAO = 1.031;
 const GOOGLE_CLIENT_ID="1098141721569-72hg5nhpa0donvdevu0i58466dg4ph7f.apps.googleusercontent.com";
 const TAXA_CONVERSAO_TEMBTC = 1.016505023832982;
 
