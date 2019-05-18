@@ -309,7 +309,7 @@ class App extends Component {
       valorPassiva = 0
     }
 
-    const alertaPassiva = valorPassiva > venda && pctBat < 0.20;
+    const alertaPassiva = valorPassiva > (venda + 2);
 
     return (this.usuarioLogado() ? (
       <div className="App">
