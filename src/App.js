@@ -161,7 +161,7 @@ class App extends Component {
       let vlrCompra = capital / result.bat.sell
       let vlrVendaBtc  = vlrCompra * vendaBtc
       let vlrVenda = vlrVendaBtc * venda
-      const taxas = (vlrVenda * 0.01975) + (0.0003 * venda)
+      const taxas = (vlrVenda * 0.01986) + (0.0003 * venda)
       const lucroBat = (vlrVenda - capital) - taxas
       const pctBat = (lucroBat / capital) * 100
 
