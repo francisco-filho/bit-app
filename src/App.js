@@ -64,12 +64,12 @@ class App extends Component {
 
   componentDidMount() {
     this.interval = setInterval(this.atualizarCotacoes, 3000)
-    this.intervalPoly = setInterval(this.atualizarCotacaoExterna, 1000 * 15 * 1)
+    this.intervalPoly = setInterval(this.atualizarCotacaoExternaBinance, 1000 * 10 * 1)
     this.intervalDolar = setInterval(this.atualizarCotacaoDolar, 1000 * 60 * 2)
     this.intervalLivro = setInterval(this.atualizarLivros, 1000 * 5)
     this.atualizarCotacaoDolar()
     this.atualizarLivros()
-    setTimeout(this.atualizarCotacaoExterna, 2000)
+    setTimeout(this.atualizarCotacaoExternaBinance, 2000)
     if (this.noDominio()) {
       initGoogle(auth => console.log(auth));
     }
@@ -115,11 +115,15 @@ class App extends Component {
   }
 
   atualizarCotacaoExternaBinance = () => {
+    console.log('calling api')
     get(SERVER_COTACAO_API).then(resp => {
       if (resp){
         const USDC_BTC = resp
             .filter(s => s.symbol === BINANCE_SYMBOL.BTC_USDC)
-            .reduce((o, n) => parseFloat(n.price), {})
+            .reduce((o, n) => {
+              return parseFloat(n.price)
+            }, {})
+        console.log(USDC_BTC)
         const USDC_ETH = resp
             .filter(s => s.symbol === BINANCE_SYMBOL.ETH_USDC)
             .reduce((o, n) => parseFloat(n.price), {})
@@ -128,9 +132,9 @@ class App extends Component {
             .reduce((o, n) => parseFloat(n.price), {})
 
         this.setState({
-          cotacaoDolar: USDC_BTC,
-          cotacaoEthDolar: USDC_ETH,
-          cotacaoExternaBTC_ETH: BTC_ETH,
+          cotacaoDolar: {last: USDC_BTC},
+          cotacaoEthDolar: {last: USDC_ETH},
+          cotacaoExternaBTC_ETH: {last: BTC_ETH},
           cotacoesExternas: resp
         })
       }
