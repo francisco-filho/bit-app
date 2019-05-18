@@ -165,7 +165,7 @@ class App extends Component {
       const lucroBat = (vlrVenda - capital) - taxas
       const pctBat = (lucroBat / capital) * 100
 
-      const diffTembtc = venda - result.tembtc.sell;
+      const diffTembtc = result.tembtc ? venda - result.tembtc.sell : 0;
       let valorPassiva = venda
       const calcDiff = (anterior, atual) => anterior - atual
 
