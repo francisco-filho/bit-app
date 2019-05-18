@@ -6,20 +6,33 @@ const https = require('https');
 //const HG_KEY="18837869"
 const HG_KEY="346f6c2f"
 const MOEDAS_URL = `https://api.hgbrasil.com/finance?format=json-cors&key=${HG_KEY}`
+const BINANCE_API = "https://api.binance.com/api/v3/ticker/price";
+const BINANCE_SYMBOL = {BTC_USDC: 'BTCUSDC', ETH_USDC: 'ETHUSDC', ETH_BTC: 'ETHBTC'}
+
 //const MOEDAS_URL="http://68.183.139.142:3001/api/cotacoes";
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(pino);
 
 let cotacoes = {}
+let binanceData = []
 
 setInterval(queryApi, 1000 * 60 * 15)
+setInterval(binanceApi, 1000 * 15 * 1)
+
 queryApi()
+binanceApi()
 
 app.get('/api/cotacoes', (req, res) => {
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.send(cotacoes);
+});
+
+app.get('/api/binance', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.send(binanceData);
 });
 
 app.listen(3001, () =>
@@ -38,6 +51,23 @@ function queryApi(){
     resp.on('end', () => {
       console.log(data)
       cotacoes = data;
+    });
+
+  }).on("error", (err) => {
+    console.log("Error: " + err.message);
+  });
+}
+
+function binanceApi(){
+  return https.get(BINANCE_API, (resp) => {
+    let data = '';
+
+    resp.on('data', (chunk) => {
+      data += chunk;
+    });
+
+    resp.on('end', () => {
+      binanceData = data;
     });
 
   }).on("error", (err) => {

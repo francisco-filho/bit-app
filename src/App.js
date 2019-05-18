@@ -13,6 +13,8 @@ const TEM_ETH_LIVRO_URL = "https://broker.tembtc.com.br/api/v3/btceth/orderbook"
 
 const BAT_URL = "https://broker.batexchange.com.br/api/v3/brleth/ticker"
 const POLONIEX = "https://poloniex.com/public?command=returnTicker"
+const SERVER_COTACAO_API = "http://www.capimgrosso.com:3001/api/binance";
+const BINANCE_SYMBOL = {BTC_USDC: 'BTCUSDC', ETH_USDC: 'ETHUSDC', ETH_BTC: 'ETHBTC'}
 const MOEDAS_URL="http://www.capimgrosso.com:3001/api/cotacoes";
 //const MOEDAS_URL="http://68.183.139.142:3001/api/cotacoes";
 const PCT_CONVERSAO = 1.031;
@@ -62,7 +64,7 @@ class App extends Component {
 
   componentDidMount() {
     this.interval = setInterval(this.atualizarCotacoes, 3000)
-    this.intervalPoly = setInterval(this.atualizarCotacaoExterna, 1000 * 20 * 1)
+    this.intervalPoly = setInterval(this.atualizarCotacaoExterna, 1000 * 15 * 1)
     this.intervalDolar = setInterval(this.atualizarCotacaoDolar, 1000 * 60 * 2)
     this.intervalLivro = setInterval(this.atualizarLivros, 1000 * 5)
     this.atualizarCotacaoDolar()
@@ -110,6 +112,29 @@ class App extends Component {
             cotacoesExternas: resp
           })
       })
+  }
+
+  atualizarCotacaoExternaBinance = () => {
+    get(SERVER_COTACAO_API).then(resp => {
+      if (resp){
+        const USDC_BTC = resp
+            .filter(s => s.symbol === BINANCE_SYMBOL.BTC_USDC)
+            .reduce((o, n) => parseFloat(n.price), {})
+        const USDC_ETH = resp
+            .filter(s => s.symbol === BINANCE_SYMBOL.ETH_USDC)
+            .reduce((o, n) => parseFloat(n.price), {})
+        const BTC_ETH = resp
+            .filter(s => s.symbol === BINANCE_SYMBOL.ETH_BTC)
+            .reduce((o, n) => parseFloat(n.price), {})
+
+        this.setState({
+          cotacaoDolar: USDC_BTC,
+          cotacaoEthDolar: USDC_ETH,
+          cotacaoExternaBTC_ETH: BTC_ETH,
+          cotacoesExternas: resp
+        })
+      }
+    })
   }
 
   atualizarLivros = () => {
