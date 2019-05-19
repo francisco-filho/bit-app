@@ -65,7 +65,7 @@ function binanceApi(){
 
 
     if (resp.statusCode == RATE_LIMIT_EXCEEDED || resp.statusCode == IP_BANNED){
-      const retryAfter = parseInt(resp.headers['retry-after']) * 1000;
+      const retryAfter = resp.headers['retry-after'] ? parseInt(resp.headers['retry-after']) * 1000 : 30000;
       clearInterval(binanceApiInterval);
       setTimeout(() => binanceApiInterval = setInterval(binanceApi, 1000 * 15 * 1), retryAfter);
       return;
