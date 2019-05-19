@@ -17,8 +17,8 @@ app.use(pino);
 let cotacoes = {}
 let binanceData = []
 
-setInterval(queryApi, 1000 * 60 * 15)
-setInterval(binanceApi, 1000 * 15 * 1)
+let queryApiInterval = setInterval(queryApi, 1000 * 60 * 15)
+let binanceApiInterval = setInterval(binanceApi, 1000 * 15 * 1)
 
 queryApi()
 binanceApi()
@@ -60,6 +60,17 @@ function queryApi(){
 
 function binanceApi(){
   return https.get(BINANCE_API, (resp) => {
+    const RATE_LIMIT_EXCEEDED = 429;
+    const IP_BANNED = 418;
+
+
+    if (resp.statusCode == RATE_LIMIT_EXCEEDED || resp.statusCode == IP_BANNED){
+      const retryAfter = parseInt(resp.headers['retry-after']) * 1000;
+      clearInterval(binanceApiInterval);
+      setTimeout(() => binanceApiInterval = setInterval(binanceApi, 1000 * 15 * 1), retryAfter);
+      return;
+    }
+
     let data = '';
 
     resp.on('data', (chunk) => {
