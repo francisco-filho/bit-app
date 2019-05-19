@@ -8,8 +8,10 @@ const HG_KEY="346f6c2f"
 const MOEDAS_URL = `https://api.hgbrasil.com/finance?format=json-cors&key=${HG_KEY}`
 const BINANCE_API = "https://api.binance.com/api/v3/ticker/price";
 const BINANCE_SYMBOL = {BTC_USDC: 'BTCUSDC', ETH_USDC: 'ETHUSDC', ETH_BTC: 'ETHBTC'}
-
+const BINANCE_INTERVAL = 10
 //const MOEDAS_URL="http://68.183.139.142:3001/api/cotacoes";
+
+
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(pino);
@@ -18,7 +20,7 @@ let cotacoes = {}
 let binanceData = []
 
 let queryApiInterval = setInterval(queryApi, 1000 * 60 * 15)
-let binanceApiInterval = setInterval(binanceApi, 1000 * 15 * 1)
+let binanceApiInterval = setInterval(binanceApi, 1000 * BINANCE_INTERVAL * 1)
 
 queryApi()
 binanceApi()
@@ -67,7 +69,7 @@ function binanceApi(){
     if (resp.statusCode == RATE_LIMIT_EXCEEDED || resp.statusCode == IP_BANNED){
       const retryAfter = resp.headers['retry-after'] ? parseInt(resp.headers['retry-after']) * 1000 : 30000;
       clearInterval(binanceApiInterval);
-      setTimeout(() => binanceApiInterval = setInterval(binanceApi, 1000 * 15 * 1), retryAfter);
+      setTimeout(() => binanceApiInterval = setInterval(binanceApi, 1000 * BINANCE_INTERVAL * 1), retryAfter);
       return;
     }
 
